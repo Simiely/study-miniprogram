@@ -78,7 +78,7 @@
    📲 iPad .tablet — 物理尺寸与 iPhone 一致（mockup px ÷3）
    手机 mockup 画布 1320px→440pt 物理，iPad 按同样物理 pt 取值
    ============================================================ */
-.tablet .tablet-content { display: flex; flex-direction: column; height: 100vh; padding: 15px 20px 30px; box-sizing: border-box; }
+.tablet .tablet-content { position: absolute; inset: 0; display: flex; flex-direction: column; padding: 15px 20px 30px; }
 
 /* 顶栏 */
 .tablet .mode-top { margin-bottom: 10px; }

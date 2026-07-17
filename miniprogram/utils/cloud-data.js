@@ -1,28 +1,33 @@
 /**
  * utils/cloud-data.js - 数据读取（先本地，后云存储）
  *
- * 【当前】从项目 sample-data/*.js 读取本地数据（require 方式）
- * 【后续】开启云存储：
- *   1. 在 app.js 中填入正确 envId
- *   2. 将下方 CLOUD_ENABLED 改为 true
- *   3. 将 sample-data/*.json 上传到云存储根目录
+ * 注意：微信小程序打包器静态分析 require()，不接受动态变量路径。
+ * 本地模式用静态 Map 映射 boardId → 对应数据模块。
  */
 
 const CLOUD_ENABLED = false;
 
-/* ========== 本地读取（require 项目内 JS 模块）========== */
+/* ========== 本地读取（静态 require，不做动态拼接）========== */
+
+/* 所有板块数据 */
+const BOARDS = require('../sample-data/boards.js');
+
+/* 按 boardId 映射卡片数据 —— 使用静态 require，不拼接字符串 */
+const CARDS_MAP = {
+  animal:   require('../sample-data/cards-animal.js'),
+  english:  require('../sample-data/cards-english.js'),
+  history:  require('../sample-data/cards-history.js'),
+};
 
 function getBoardsLocal() {
-  return require('../sample-data/boards.js');
+  return BOARDS;
 }
 
 function getCardsLocal(boardId) {
-  try {
-    return require(`../sample-data/cards-${boardId}.js`);
-  } catch (e) {
-    console.error(`本地卡片数据不存在: cards-${boardId}.js`, e);
-    return { cards: [] };
-  }
+  const mod = CARDS_MAP[boardId];
+  if (mod) return mod;
+  console.error('本地卡片数据不存在: boardId=' + boardId);
+  return { cards: [] };
 }
 
 /* ========== 云存储读取（后续启用）========== */
@@ -61,7 +66,7 @@ function getBoards() {
 }
 
 function getCards(boardId) {
-  if (CLOUD_ENABLED) return fetchJSONCloud(`cards-${boardId}.json`);
+  if (CLOUD_ENABLED) return fetchJSONCloud('cards-' + boardId + '.json');
   return Promise.resolve(getCardsLocal(boardId));
 }
 

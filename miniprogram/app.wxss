@@ -37,6 +37,7 @@ button::after { border: none; }
 /* 根容器：承载 .tablet 平板类 */
 .page-root {
   min-height: 100vh;
+  position: relative;
 }
 
 /* 通用胶囊按钮（wxss 复用） */
