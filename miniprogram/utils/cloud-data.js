@@ -1,80 +1,77 @@
 /**
- * utils/cloud-data.js - 云存储 JSON 数据读取
+ * utils/cloud-data.js - 数据读取（先本地，后云存储）
  *
- * 所有卡片数据存储在微信云存储的 JSON 文件中，无需数据库。
- * 文件结构：
- *   boards.json              → 板块列表 [{ id, title, emoji, cardCount }]
- *   cards-<boardId>.json     → 某板块下所有卡片
+ * 【当前】从项目 sample-data/ 目录读取本地 JSON 文件
+ * 【后续】填好 app.js 中的 envId 后，开启云存储模式：
+ *   将下面 CLOUD_ENABLED 改为 true 即可
  *
- * 使用 wx.cloud.downloadFile 下载后 JSON.parse，
- * 小程序端做了缓存（Storage），避免频繁下载。
+ * 本地 JSON 文件位置：
+ *   sample-data/boards.json              → 板块列表
+ *   sample-data/cards-<boardId>.json     → 某板块下所有卡片
  */
 
-/** 缓存键前缀 */
-const CACHE_PREFIX = 'cloud_cache_';
-/** 缓存有效期（毫秒） */
-const CACHE_TTL = 30 * 60 * 1000; // 30 分钟
+const CLOUD_ENABLED = false;
 
-/**
- * 获取云存储文件的完整 cloud:// URL
- * @param {string} filename 文件名（含扩展名）
- * @returns {string} 云文件 ID
- */
-function getFileURL(filename) {
-  const app = getApp();
-  const envId = app.globalData.envId;
-  return `cloud://${envId}/${filename}`;
+/* ========== 本地读取 ========== */
+
+function readLocalJSON(filename) {
+  try {
+    const fm = wx.getFileSystemManager();
+    const raw = fm.readFileSync(`sample-data/${filename}`, 'utf8');
+    return JSON.parse(raw);
+  } catch (e) {
+    console.error('本地 JSON 读取失败', filename, e);
+    return null;
+  }
 }
 
-/**
- * 从云存储下载 JSON 文件，带本地缓存
- * @param {string} filename - 如 "boards.json"
- * @returns {Promise<object>} 解析后的 JSON 数据
- */
-async function fetchJSON(filename) {
+function getBoardsLocal() {
+  return readLocalJSON('boards.json');
+}
+
+function getCardsLocal(boardId) {
+  return readLocalJSON(`cards-${boardId}.json`);
+}
+
+/* ========== 云存储读取（后续启用）========== */
+
+const CACHE_PREFIX = 'cloud_cache_';
+const CACHE_TTL = 30 * 60 * 1000;
+
+function getFileURL(filename) {
+  const app = getApp();
+  return `cloud://${app.globalData.envId}/${filename}`;
+}
+
+async function fetchJSONCloud(filename) {
   const cacheKey = CACHE_PREFIX + filename;
   const cached = wx.getStorageSync(cacheKey);
   if (cached && Date.now() - cached.ts < CACHE_TTL) {
     return cached.data;
   }
-
   try {
     const { fileID } = await wx.cloud.downloadFile({ fileID: getFileURL(filename) });
-    const { data } = await wx.cloud.callFunction({
-      name: 'readJSON',
-      data: { fileID },
-    });
-    // 也可以直接用云函数读取；简化方案：downloadFile 后 wx.getFileSystemManager().readFile
-    // 但最简方案是在小程序云函数中处理，此处用 downloadFile + http 方式
     const resp = await fetch(fileID);
     const json = await resp.json();
-
-    // 写入缓存
     wx.setStorageSync(cacheKey, { data: json, ts: Date.now() });
     return json;
   } catch (e) {
     console.error('云存储读取失败', filename, e);
-    // 降级：有缓存就用过期缓存
     if (cached) return cached.data;
     throw e;
   }
 }
 
-/**
- * 读取板块列表
- * @returns {Promise<{boards: Array}>}
- */
+/* ========== 统一导出 ========== */
+
 function getBoards() {
-  return fetchJSON('boards.json');
+  if (CLOUD_ENABLED) return fetchJSONCloud('boards.json');
+  return Promise.resolve(getBoardsLocal());
 }
 
-/**
- * 读取某板块的卡片
- * @param {string} boardId - 板块 ID
- * @returns {Promise<{cards: Array}>}
- */
 function getCards(boardId) {
-  return fetchJSON(`cards-${boardId}.json`);
+  if (CLOUD_ENABLED) return fetchJSONCloud(`cards-${boardId}.json`);
+  return Promise.resolve(getCardsLocal(boardId));
 }
 
 module.exports = { getBoards, getCards };
