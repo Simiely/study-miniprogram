@@ -76,9 +76,8 @@
 
 /* ============================================================
    📲 iPad .tablet — 物理尺寸与 iPhone 一致（mockup px ÷3）
-   手机 mockup 画布 1320px→440pt 物理，iPad 按同样物理 pt 取值
    ============================================================ */
-.tablet .tablet-content { height: 100vh; display: flex; flex-direction: column; padding: 15px 20px 30px; box-sizing: border-box; overflow: hidden; }
+.tablet .tablet-content { height: 100vh; display: flex; flex-direction: column; padding: 15px 20px 30px; box-sizing: border-box; overflow: hidden; position: relative; }
 
 /* 顶栏 */
 .tablet .mode-top { flex: none; margin-bottom: 10px; }
@@ -95,43 +94,37 @@
 .tablet .b-tile .bt-name { font-size: 13px; margin-top: 5px; text-shadow: 0 1px 2px rgba(0,0,0,.35); }
 .tablet .b-tile .bt-flag { top: 5px; right: 6px; font-size: 11px; width: 19px; height: 19px; }
 
-/* ===== 卡片模式 — iPad flip-flank ===== */
-.tablet .fc-counter { flex: none; font-size: 14px; margin-bottom: 9px; font-weight: 600; text-align: center; color: var(--text-weak); }
+/* ===== 卡片模式（iPad 扁平结构） ===== */
+.tablet .fc-counter { flex: none; text-align: center; font-size: 14px; margin-bottom: 9px; font-weight: 600; color: var(--text-weak); }
 
-/* flip-flank：flex:1 直接撑满 tablet-content 剩余空间 */
-.tablet .cards-stage.flip-flank { flex: 1; min-height: 0; position: relative; gap: 0; align-items: stretch; justify-content: center; }
-.tablet .cards-stage.flip-flank .learn-card { width: 100%; height: 100%; padding: 0; background: transparent; box-shadow: none; position: relative; }
-.tablet .cards-stage.flip-flank .lc-image { flex: 1; min-height: 0; margin: 0 0 160px 0; border-radius: 16px; background: linear-gradient(140deg,#eef3e4 0%,#dce7cf 100%); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
-.tablet .cards-stage.flip-flank .lc-image .lc-emoji { font-size: 173px; line-height: 1; }
-.tablet .cards-stage.flip-flank .lc-image .lc-ph { position: absolute; bottom: 9px; left: 0; right: 0; text-align: center; font-size: 11px; color: var(--text-weak); opacity: .72; }
-.tablet .cards-stage.flip-flank .lc-image .lc-zoom { position: absolute; bottom: 10px; right: 10px; width: 29px; height: 29px; z-index: 8; border-radius: 50%; background: rgba(255,255,255,.85); color: var(--primary); font-size: 15px; display: flex; align-items: center; justify-content: center; }
-.tablet .cards-stage.flip-flank .lc-image .lc-zoom:active { transform: scale(.94); }
+/* 图片填满中间剩余空间 */
+.tablet .lc-image { flex: 1; min-height: 0; border-radius: 16px; background: linear-gradient(140deg,#eef3e4 0%,#dce7cf 100%); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+.tablet .lc-image .lc-emoji { font-size: 173px; line-height: 1; }
+.tablet .lc-image .lc-ph { position: absolute; bottom: 9px; left: 0; right: 0; text-align: center; font-size: 11px; color: var(--text-weak); opacity: .72; }
+.tablet .lc-image .lc-zoom { position: absolute; bottom: 10px; right: 10px; width: 29px; height: 29px; z-index: 8; border-radius: 50%; background: rgba(255,255,255,.85); color: var(--primary); font-size: 15px; display: flex; align-items: center; justify-content: center; }
 
-/* 三块发音条浮动在图片底部半透明渐层上 */
-.tablet .cards-stage.flip-flank .lc-texts { position: absolute; left: 0; right: 0; bottom: 0; z-index: 4; background: linear-gradient(to top, rgba(245,240,232,.96) 58%, rgba(245,240,232,0)); padding: 21px 0 32px; display: flex; flex-direction: column; gap: 7px; }
-.tablet .cards-stage.flip-flank .lc-zhen { display: flex; gap: 7px; }
-.tablet .cards-stage.flip-flank .lc-cell { flex: 1; min-width: 0; display: flex; align-items: center; justify-content: space-between; gap: 7px; padding: 10px 13px; background: #faf8f3; border-radius: 11px; }
-.tablet .cards-stage.flip-flank .lc-cell:active { background: #f1ede4; transform: scale(.99); }
-.tablet .cards-stage.flip-flank .lc-cell-zh .lc-zh { font-size: 29px; font-weight: 700; color: var(--text); line-height: 1.15; }
-.tablet .cards-stage.flip-flank .lc-cell-en .lc-en { font-size: 29px; color: var(--text); line-height: 1.15; }
-.tablet .cards-stage.flip-flank .lc-line { display: flex; align-items: center; justify-content: space-between; gap: 9px; padding: 10px 13px; background: #faf8f3; border-radius: 11px; }
-.tablet .cards-stage.flip-flank .lc-line:active { background: #f1ede4; transform: scale(.99); }
-.tablet .cards-stage.flip-flank .lc-line .lc-fact { font-size: 14px; color: var(--text); line-height: 1.55; }
-.tablet .cards-stage.flip-flank .lc-line .lc-sound,
-.tablet .cards-stage.flip-flank .lc-cell .lc-sound { width: 21px; height: 21px; border-radius: 50%; background: var(--primary); color: #fff; flex: 0 0 auto; display: flex; align-items: center; justify-content: center; font-size: 11px; box-shadow: 0 3px 6px rgba(74,124,89,.30); opacity: .2; }
+/* 三块发音条浮动在图片底部 */
+.tablet .lc-texts { position: absolute; left: 0; right: 0; bottom: 0; z-index: 4; background: linear-gradient(to top, rgba(245,240,232,.96) 58%, rgba(245,240,232,0)); padding: 21px 0 32px; display: flex; flex-direction: column; gap: 7px; }
+.tablet .lc-zhen { display: flex; gap: 7px; }
+.tablet .lc-cell { flex: 1; min-width: 0; display: flex; align-items: center; justify-content: space-between; gap: 7px; padding: 10px 13px; background: #faf8f3; border-radius: 11px; }
+.tablet .lc-cell:active { background: #f1ede4; transform: scale(.99); }
+.tablet .lc-cell-zh .lc-zh { font-size: 29px; font-weight: 700; color: var(--text); line-height: 1.15; }
+.tablet .lc-cell-en .lc-en { font-size: 29px; color: var(--text); line-height: 1.15; }
+.tablet .lc-line { display: flex; align-items: center; justify-content: space-between; gap: 9px; padding: 10px 13px; background: #faf8f3; border-radius: 11px; }
+.tablet .lc-line:active { background: #f1ede4; transform: scale(.99); }
+.tablet .lc-line .lc-fact { font-size: 14px; color: var(--text); line-height: 1.55; }
+.tablet .lc-line .lc-sound,
+.tablet .lc-cell .lc-sound { width: 21px; height: 21px; border-radius: 50%; background: var(--primary); color: #fff; flex: 0 0 auto; display: flex; align-items: center; justify-content: center; font-size: 11px; box-shadow: 0 3px 6px rgba(74,124,89,.30); opacity: .2; }
 
-/* 导航按钮（iPad 右侧悬浮 50% 透明度） */
-.tablet .cards-stage.flip-flank .nav-stack { position: absolute; right: 16px; top: 60%; transform: translateY(-50%); z-index: 6; display: flex; flex-direction: column; align-items: center; gap: 15px; }
-.tablet .cards-stage.flip-flank .nav-round { width: 35px; height: 35px; border-radius: 50%; background: rgba(74,124,89,.5); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 17px; }
-.tablet .cards-stage.flip-flank .nav-round.ghost { background: rgba(238,242,230,.5); border: 1px solid rgba(74,124,89,.5); }
-.tablet .cards-stage.flip-flank .nav-round.accent { background: rgba(232,168,124,.6); }
-.tablet .cards-stage.flip-flank .nav-round:active { transform: scale(.92); }
+/* 导航按钮右侧悬浮 */
+.tablet .nav-stack { position: absolute; right: 16px; top: 60%; transform: translateY(-50%); z-index: 10; display: flex; flex-direction: column; align-items: center; gap: 15px; }
+.tablet .nav-round { width: 35px; height: 35px; border-radius: 50%; background: rgba(74,124,89,.5); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 17px; }
+.tablet .nav-round.ghost { background: rgba(238,242,230,.5); border: 1px solid rgba(74,124,89,.5); }
+.tablet .nav-round.accent { background: rgba(232,168,124,.6); }
+.tablet .nav-round:active { transform: scale(.92); }
 
-/* ===== 弹出层（iPad — 带 pop-replica 占位结构） ===== */
+/* ===== 弹出层（iPad） ===== */
 .tablet .pop-mask.tablet-mask { position: fixed; inset: 0; background: rgba(20,18,14,.90); z-index: 60; }
-.tablet .pop-card { position: absolute; inset: 0; background: var(--bg); border-radius: 0; overflow: hidden; display: flex; flex-direction: column; }
+.tablet .pop-card { position: absolute; inset: 0; background: var(--bg); overflow: hidden; display: flex; flex-direction: column; padding: 15px 20px 30px; }
 .tablet .pop-card .pop-close { position: absolute; top: 13px; right: 13px; z-index: 10; width: 35px; height: 35px; border-radius: 50%; background: rgba(0,0,0,.5); color: #fff; font-size: 18px; display: flex; align-items: center; justify-content: center; }
-.tablet .pop-replica { display: flex; flex-direction: column; flex: 1; padding: 15px 20px 30px; }
-.tablet .pop-spacer-mode { flex: none; height: 36px; }
-.tablet .pop-spacer-counter { flex: none; height: 26px; }
-.tablet .pop-replica .cards-stage { flex: 1; min-height: 0; }
+.tablet .pop-spacer { flex: none; height: 57px; }
