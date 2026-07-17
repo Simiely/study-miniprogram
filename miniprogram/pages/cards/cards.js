@@ -21,13 +21,10 @@ Page({
 
   onLoad(options) {
     const isTab = isTablet();
+    const info = wx.getWindowInfo();
     const isLand = isLandscape();
-    let scale = 1;
-    if (isTab) {
-      const info = wx.getWindowInfo();
-      scale = (info.windowWidth - 40) / 1320;
-    }
-    this.setData({ isTablet: isTab, isLandscape: isLand, scale });
+    let winHeight = info.windowHeight;
+    this.setData({ isTablet: isTab, isLandscape: isLand, winHeight });
     const boardId = options.boardId;
     const title = decodeURIComponent(options.title || '');
     wx.setNavigationBarTitle({ title: title || '卡片' });

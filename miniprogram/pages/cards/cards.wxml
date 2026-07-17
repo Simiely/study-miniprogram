@@ -137,9 +137,9 @@
         </view>
       </block>
 
-      <!-- ===== 卡片模式（iPad — 等比缩放） ===== -->
+      <!-- ===== 卡片模式（iPad — JS 显式高度 + flex:1） ===== -->
       <block wx:elif="{{mode === 'card'}}">
-        <view class="scale-box" style="width:1320px;transform:scale({{scale}});transform-origin:0 0;">
+        <view class="ipad-card" style="height:{{winHeight}}px;">
           <view class="fc-counter">{{progress}}</view>
           <view class="lc-image">
             <view class="lc-zoom">⤢</view>

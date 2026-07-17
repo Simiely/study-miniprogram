@@ -75,17 +75,15 @@
 .pop-card .cards-stage.flip-center .learn-card { padding-bottom: 80rpx; }
 
 /* ============================================================
-   📲 iPad .tablet — transform:scale 等比缩放
-   直接用 mockup 原始 px 值，整体缩放到屏幕宽度
+   📲 iPad .tablet — JS 显式高度 + ÷3 px 值 + 基础 flex
    ============================================================ */
-.tablet .tablet-content { position: fixed; inset: 0; overflow: hidden; background: var(--bg); padding: 20px; }
-.tablet .scale-box { display: flex; flex-direction: column; height: 100%; position: relative; }
+.tablet .tablet-content { padding: 44px 60px 90px; }
 
 /* 顶栏 */
-.tablet .mode-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 30px; flex: none; }
-.tablet .mode-top .badge { background: var(--primary); color: #fff; font-size: 36px; font-weight: 600; padding: 18px 44px; border-radius: 999px; white-space: nowrap; }
+.tablet .mode-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 30px; }
+.tablet .mode-top .badge { background: var(--primary); color: #fff; font-size: 36px; font-weight: 600; padding: 18px 44px; border-radius: 999px; }
 .tablet .mode-top .links { display: flex; gap: 18px; }
-.tablet .mode-top .link { background: var(--card-bg); border: 2px solid #e0dcd4; color: var(--text); font-size: 33px; font-weight: 600; padding: 16px 32px; border-radius: 999px; white-space: nowrap; }
+.tablet .mode-top .link { background: var(--card-bg); border: 2px solid #e0dcd4; color: var(--text); font-size: 33px; font-weight: 600; padding: 16px 32px; border-radius: 999px; }
 
 /* 浏览网格 */
 .tablet .browse-grid { display: grid; gap: 28px; }
@@ -96,31 +94,30 @@
 .tablet .b-tile .bt-name { font-size: 40px; color: #fff; font-weight: 600; margin-top: 14px; text-shadow: 0 2px 6px rgba(0,0,0,.35); }
 .tablet .b-tile .bt-flag { position: absolute; top: 16px; right: 18px; font-size: 34px; color: #fff; background: rgba(0,0,0,.35); border-radius: 50%; width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; }
 
-/* ===== 卡片模式 — mockup 原始 px 值 ===== */
-.tablet .scale-box .fc-counter { text-align: center; font-size: 42px; color: var(--text-weak); margin-bottom: 28px; font-weight: 600; flex: none; }
+/* ===== 卡片模式 ===== */
+.tablet .ipad-card { display: flex; flex-direction: column; padding: 44px 60px 90px; position: relative; background: var(--bg); }
+.tablet .ipad-card .fc-counter { text-align: center; font-size: 42px; color: var(--text-weak); margin-bottom: 28px; font-weight: 600; flex: none; }
 
-.tablet .scale-box .lc-image { flex: 1; min-height: 0; border-radius: 48px; background: linear-gradient(140deg,#eef3e4 0%,#dce7cf 100%); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
-.tablet .scale-box .lc-image .lc-emoji { font-size: 520px; line-height: 1; }
-.tablet .scale-box .lc-image .lc-ph { position: absolute; bottom: 26px; left: 0; right: 0; text-align: center; font-size: 32px; color: var(--text-weak); opacity: .72; }
-.tablet .scale-box .lc-image .lc-zoom { position: absolute; bottom: 30px; right: 30px; width: 88px; height: 88px; z-index: 8; border-radius: 50%; background: rgba(255,255,255,.85); color: var(--primary); font-size: 44px; display: flex; align-items: center; justify-content: center; }
+.tablet .ipad-card .lc-image { flex: 1; min-height: 0; border-radius: 48px; background: linear-gradient(140deg,#eef3e4 0%,#dce7cf 100%); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+.tablet .ipad-card .lc-image .lc-emoji { font-size: 520px; line-height: 1; }
+.tablet .ipad-card .lc-image .lc-ph { position: absolute; bottom: 26px; left: 0; right: 0; text-align: center; font-size: 32px; color: var(--text-weak); opacity: .72; }
+.tablet .ipad-card .lc-image .lc-zoom { position: absolute; bottom: 30px; right: 30px; width: 88px; height: 88px; z-index: 8; border-radius: 50%; background: rgba(255,255,255,.85); color: var(--primary); font-size: 44px; display: flex; align-items: center; justify-content: center; }
 
-.tablet .scale-box .lc-texts { position: absolute; left: 0; right: 0; bottom: 0; z-index: 4; background: linear-gradient(to top, rgba(245,240,232,.96) 58%, rgba(245,240,232,0)); padding: 64px 0 96px; display: flex; flex-direction: column; gap: 22px; }
-.tablet .scale-box .lc-zhen { display: flex; gap: 22px; }
-.tablet .scale-box .lc-cell { flex: 1; min-width: 0; display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 30px 38px; background: #faf8f3; border-radius: 34px; }
-.tablet .scale-box .lc-line { display: flex; align-items: center; justify-content: space-between; gap: 28px; padding: 30px 38px; background: #faf8f3; border-radius: 34px; }
-.tablet .scale-box .lc-cell-zh .lc-zh { font-size: 88px; font-weight: 700; color: var(--text); line-height: 1.15; }
-.tablet .scale-box .lc-cell-en .lc-en { font-size: 88px; color: var(--text); line-height: 1.15; }
-.tablet .scale-box .lc-line .lc-fact { font-size: 42px; color: var(--text); line-height: 1.55; }
-.tablet .scale-box .lc-line .lc-sound,
-.tablet .scale-box .lc-cell .lc-sound { width: 64px; height: 64px; border-radius: 50%; background: var(--primary); color: #fff; flex: 0 0 auto; display: flex; align-items: center; justify-content: center; font-size: 32px; box-shadow: 0 8px 18px rgba(74,124,89,.30); opacity: .2; }
+.tablet .ipad-card .lc-texts { position: absolute; left: 0; right: 0; bottom: 0; z-index: 4; background: linear-gradient(to top, rgba(245,240,232,.96) 58%, rgba(245,240,232,0)); padding: 64px 0 96px; display: flex; flex-direction: column; gap: 22px; }
+.tablet .ipad-card .lc-zhen { display: flex; gap: 22px; }
+.tablet .ipad-card .lc-cell { flex: 1; min-width: 0; display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 30px 38px; background: #faf8f3; border-radius: 34px; }
+.tablet .ipad-card .lc-line { display: flex; align-items: center; justify-content: space-between; gap: 28px; padding: 30px 38px; background: #faf8f3; border-radius: 34px; }
+.tablet .ipad-card .lc-cell-zh .lc-zh { font-size: 88px; font-weight: 700; color: var(--text); line-height: 1.15; }
+.tablet .ipad-card .lc-cell-en .lc-en { font-size: 88px; color: var(--text); line-height: 1.15; }
+.tablet .ipad-card .lc-line .lc-fact { font-size: 42px; color: var(--text); line-height: 1.55; }
+.tablet .ipad-card .lc-line .lc-sound,
+.tablet .ipad-card .lc-cell .lc-sound { width: 64px; height: 64px; border-radius: 50%; background: var(--primary); color: #fff; flex: 0 0 auto; display: flex; align-items: center; justify-content: center; font-size: 32px; box-shadow: 0 8px 18px rgba(74,124,89,.30); opacity: .2; }
 
-.tablet .scale-box .nav-stack { position: absolute; right: 36px; top: 62%; transform: translateY(-50%); z-index: 10; display: flex; flex-direction: column; align-items: center; gap: 38px; }
-.tablet .scale-box .nav-round { width: 105px; height: 105px; border-radius: 50%; background: rgba(74,124,89,.5); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 50px; }
-.tablet .scale-box .nav-round.ghost { background: rgba(238,242,230,.5); border: 3px solid rgba(74,124,89,.5); }
-.tablet .scale-box .nav-round.accent { background: rgba(232,168,124,.6); }
+.tablet .ipad-card .nav-stack { position: absolute; right: 36px; top: 62%; transform: translateY(-50%); z-index: 10; display: flex; flex-direction: column; align-items: center; gap: 38px; }
+.tablet .ipad-card .nav-round { width: 105px; height: 105px; border-radius: 50%; background: rgba(74,124,89,.5); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 50px; }
+.tablet .ipad-card .nav-round.ghost { background: rgba(238,242,230,.5); border: 3px solid rgba(74,124,89,.5); }
+.tablet .ipad-card .nav-round.accent { background: rgba(232,168,124,.6); }
 
 /* ===== 弹出层（iPad） ===== */
-.tablet .pop-mask.tablet-mask { position: fixed; inset: 0; background: rgba(20,18,14,.90); z-index: 60; }
-.tablet .pop-card { position: absolute; inset: 0; background: var(--bg); overflow: hidden; padding: 20px; }
-.tablet .pop-card .pop-close { position: absolute; top: 40px; right: 40px; z-index: 10; width: 104px; height: 104px; border-radius: 50%; background: rgba(0,0,0,.5); color: #fff; font-size: 54px; display: flex; align-items: center; justify-content: center; }
-.tablet .pop-spacer { flex: none; height: 187px; }
+.tablet .pop-mask.tablet-mask { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(20,18,14,.90); z-index: 60; }
+.tablet .pop-card { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); overflow: hidden; }
