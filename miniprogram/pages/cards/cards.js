@@ -17,6 +17,7 @@ Page({
     popupCard: null,
     /* 已看过卡片集合 */
     visited: {},
+    winHeight: 800,
   },
 
   onLoad(options) {
