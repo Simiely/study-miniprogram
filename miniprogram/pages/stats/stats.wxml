@@ -1,34 +1,32 @@
-/* pages/stats/stats.wxml - 统计页
-   展示：今日日期 / 总浏览数 / 看过不同卡片数 / 浏览次数 Top5
-   数据来自本地 wx.Storage 快照（每日 0:00 冻结一次） */
-
 <view class="page-root {{isTablet ? 'tablet' : ''}}">
-  <view class="container">
-    <view class="header">
-      <text class="title">今日统计</text>
-      <text class="date">{{date}}</text>
+  <view class="content">
+    <view class="app-header">
+      <view class="h-title">今日统计</view>
+      <view class="h-sub">{{date}}</view>
     </view>
 
-    <view class="summary">
-      <view class="stat-item">
-        <text class="stat-num">{{totalViews}}</text>
-        <text class="stat-label">总浏览数</text>
+    <view class="stats-wrap center">
+      <view class="stat-row">
+        <view class="stat-tile">
+          <view class="st-num">{{totalViews}}</view>
+          <view class="st-label">总浏览次数</view>
+        </view>
+        <view class="stat-tile">
+          <view class="st-num">{{distinctCards}}</view>
+          <view class="st-label">看过卡片种类</view>
+        </view>
       </view>
-      <view class="stat-item">
-        <text class="stat-num">{{distinctCards}}</text>
-        <text class="stat-label">看过卡片</text>
-      </view>
-    </view>
 
-    <view wx:if="{{list.length > 0}}" class="rank-list">
-      <text class="rank-title">浏览最多的卡片</text>
-      <view class="rank-item" wx:for="{{list}}" wx:key="id">
-        <text class="rank-index">{{index + 1}}</text>
-        <text class="rank-name">{{item.name}}</text>
-        <text class="rank-count">{{item.count}} 次</text>
+      <view class="top-list" wx:if="{{list.length > 0}}">
+        <view class="tl-title">浏览最多的卡片</view>
+        <view class="tl-item" wx:for="{{list}}" wx:key="id">
+          <view class="tl-rank">{{index + 1}}</view>
+          <view class="tl-name">{{item.name}}</view>
+          <view class="tl-count">{{item.count}} 次</view>
+        </view>
       </view>
-    </view>
 
-    <button class="clear-btn" bindtap="onClear">清空今日统计</button>
+      <view class="btn-clear" bindtap="onClear">清空今日统计</view>
+    </view>
   </view>
 </view>

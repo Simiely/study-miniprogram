@@ -1,71 +1,59 @@
 /* pages/index/index.wxss
-   手机：2 列网格；平板(.tablet)：居中多列 */
+   首页：板块列表（mockup 样式）
+   手机 2 列 / 平板 3 列 */
 
-.container { padding: 32rpx 24rpx 60rpx; min-height: 100vh; box-sizing: border-box; }
+.content { padding: 44rpx 48rpx 90rpx; min-height: 100vh; box-sizing: border-box; }
 
-/* ---- 头部 ---- */
-.header { display: flex; align-items: center; justify-content: space-between; padding: 24rpx 8rpx 28rpx; }
-.hero { display: flex; flex-direction: column; }
-.hero-logo { font-size: 64rpx; line-height: 1; margin-bottom: 10rpx; }
-.hero-title { font-size: 44rpx; font-weight: 700; color: var(--text); letter-spacing: 1px; }
-.hero-sub { font-size: 24rpx; color: var(--text-weak); margin-top: 6rpx; }
+.app-header { margin-bottom: 40rpx; }
+.h-title { font-size: 84rpx; font-weight: 700; color: var(--text); }
+.h-sub { font-size: 40rpx; color: var(--text-weak); margin-top: 14rpx; }
 
-.stats-link {
-  background: var(--card-bg); color: var(--primary);
-  border: 4rpx solid var(--line); font-size: 28rpx;
-  padding: 14rpx 30rpx; box-shadow: var(--shadow-soft);
+.section-title {
+  font-size: 58rpx; font-weight: 700; margin: 8rpx 0 40rpx;
+  display: flex; align-items: center; gap: 20rpx;
 }
-.stats-link:active { border-color: var(--primary); transform: scale(0.96); }
-
-/* ---- 板块列表：2 列网格 ---- */
-.board-list {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 24rpx;
-}
-.board-item {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 16rpx;
-  background: var(--card-bg);
-  border-radius: var(--radius-box);
-  padding: 32rpx 30rpx;
-  box-shadow: var(--shadow-soft);
-  transition: transform 0.18s ease;
-}
-.board-item:active { transform: scale(0.975); }
-.board-emoji { font-size: 64rpx; line-height: 1; }
-.board-main { flex: 1; display: flex; flex-direction: column; min-width: 0; width: 100%; }
-.board-title { font-size: 36rpx; color: var(--text); font-weight: 600; }
-.board-sub { font-size: 24rpx; color: var(--text-weak); margin-top: 8rpx; }
-.board-count {
-  font-size: 24rpx; color: var(--primary); background: var(--primary-soft);
-  padding: 6rpx 18rpx; border-radius: 999rpx; align-self: flex-start;
+.section-icon {
+  width: 16rpx; height: 58rpx; background: var(--accent); border-radius: 8rpx;
+  flex-shrink: 0;
 }
 
-/* ---- 即将推出：灰色 + 降低透明度 ---- */
-.board-item.coming { opacity: 0.5; filter: grayscale(0.6); }
-.board-item.coming .board-count { background: #e8e3d8; color: var(--text-weak); }
+/* ---- 板块网格 ---- */
+.home-grid { display: grid; gap: 48rpx; }
+.home-grid.cols-2 { grid-template-columns: 1fr 1fr; gap: 44rpx; }
+.home-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; gap: 40rpx; }
 
-.loading, .empty { text-align: center; color: var(--text-weak); font-size: 28rpx; margin-top: 120rpx; }
+.board-card {
+  background: var(--card-bg); border-radius: var(--radius-card); padding: 56rpx 40rpx;
+  box-shadow: 0 10rpx 28rpx rgba(60,60,60,0.10); position: relative; overflow: hidden;
+}
+.board-card:active { transform: scale(0.97); }
+
+.bc-emoji { font-size: 118rpx; line-height: 1; }
+.bc-title { font-size: 64rpx; font-weight: 700; margin-top: 28rpx; color: var(--text); }
+.bc-en { font-size: 40rpx; color: var(--text-weak); margin-top: 12rpx; }
+.bc-tag {
+  display: inline-block; margin-top: 30rpx; background: #eef2e6;
+  color: var(--primary); font-size: 34rpx; font-weight: 600;
+  padding: 16rpx 34rpx; border-radius: 999rpx;
+}
+
+/* 即将推出：灰色 */
+.board-card.coming { opacity: 0.45; filter: grayscale(0.7); }
+.board-card.coming .bc-tag { background: #e8e3d8; color: var(--text-weak); }
+
+.loading, .empty { text-align: center; color: var(--text-weak); font-size: 28rpx; margin-top: 200rpx; }
 
 /* ============================================================
-   平板布局 .tablet：2-3 列居中网格，组件尺寸与手机一致（px 单位）
+   平板 .tablet
    ============================================================ */
-.tablet .container { padding: 40px 32px 64px; max-width: 900px; margin: 0 auto; }
-.tablet .header { padding: 32px 8px 36px; }
-.tablet .hero-logo { font-size: 72px; }
-.tablet .hero-title { font-size: 48px; }
-.tablet .hero-sub { font-size: 26px; }
-.tablet .stats-link { font-size: 28px; padding: 14px 32px; border-width: 2px; }
-
-.tablet .board-list {
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 28px;
-}
-.tablet .board-item { padding: 32px 30px; border-radius: 16px; }
-.tablet .board-emoji { font-size: 64px; }
-.tablet .board-title { font-size: 36px; }
-.tablet .board-sub { font-size: 24px; }
-.tablet .board-count { font-size: 24px; padding: 6px 18px; }
+.tablet .content { max-width: 1100px; margin: 0 auto; padding: 44px 60px 90px; }
+.tablet .h-title { font-size: 84px; }
+.tablet .h-sub { font-size: 40px; }
+.tablet .section-title { font-size: 58px; }
+.tablet .section-icon { width: 16px; height: 58px; }
+.tablet .home-grid { gap: 40px; }
+.tablet .board-card { padding: 56px 40px; border-radius: 72px; }
+.tablet .bc-emoji { font-size: 118px; }
+.tablet .bc-title { font-size: 64px; }
+.tablet .bc-en { font-size: 40px; }
+.tablet .bc-tag { font-size: 34px; padding: 16px 34px; }

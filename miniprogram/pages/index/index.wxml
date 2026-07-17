@@ -1,30 +1,28 @@
 <view class="page-root {{isTablet ? 'tablet' : ''}}">
-  <view class="container">
-    <view class="header">
-      <view class="hero">
-        <text class="hero-logo">📚</text>
-        <text class="hero-title">学习卡片</text>
-        <text class="hero-sub">边玩边学 · Word Cards</text>
-      </view>
-      <text class="stats-link pill" bindtap="goStats">📊 统计</text>
+  <view class="content">
+    <view class="app-header">
+      <view class="h-title">学习卡片</view>
+      <view class="h-sub">每天进步一点点</view>
+    </view>
+
+    <view class="section-title">
+      <text class="section-icon"></text>
+      <text>学习板块</text>
     </view>
 
     <view wx:if="{{loading}}" class="loading">加载中…</view>
-
     <view wx:elif="{{boards.length === 0}}" class="empty">暂无板块</view>
 
-    <view wx:else class="board-list">
-      <view class="board-item {{item.status === 'coming' ? 'coming' : ''}}"
+    <view wx:else class="home-grid {{isTablet ? 'cols-3' : 'cols-2'}}">
+      <view class="board-card {{item.status === 'coming' ? 'coming' : ''}}"
             wx:for="{{boards}}" wx:key="id"
             data-id="{{item.id}}"
             data-title="{{item.title}}"
             bindtap="onTapBoard">
-        <text class="board-emoji">{{item.emoji}}</text>
-        <view class="board-main">
-          <text class="board-title">{{item.title}}</text>
-          <text class="board-sub">{{item.desc}}</text>
-        </view>
-        <text class="board-count">{{item.cardCount > 0 ? item.cardCount + ' 张' : '即将推出'}}</text>
+        <view class="bc-emoji">{{item.emoji}}</view>
+        <view class="bc-title">{{item.title}}</view>
+        <view class="bc-en">{{item.desc}}</view>
+        <view class="bc-tag">{{item.cardCount > 0 ? item.cardCount + ' 张' : '即将推出'}}</view>
       </view>
     </view>
   </view>

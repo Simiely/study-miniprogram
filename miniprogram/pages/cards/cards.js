@@ -1,19 +1,3 @@
-/**
- * pages/cards/cards.js - 卡片学习页（浏览模式 / 卡片模式双模式）
- *
- * 数据流：
- *   onLoad → 从云存储读取 cards-<boardId>.json → 渲染到页面
- *   onTapCard → 翻到背面时调用 recordCardView() 记录一次「看过」
- *   next/prev → 翻页，循环到开头/末尾
- *
- * 双模式（由 WXML 中的条件渲染控制，本文件提供逻辑）：
- *   浏览模式：格子方阵 → 点击弹出详情
- *   卡片模式：大图 + 发音横幅 + 翻页导航
- *
- * 双布局（由 isTablet + .tablet 类控制）：
- *   手机：自适应 rpx
- *   平板（iPad 12.9"）：px 单位，组件不缩放，仅重排间距
- */
 const { getCards } = require('../../utils/cloud-data');
 const { recordCardView } = require('../../utils/stats');
 const { isTablet } = require('../../utils/device');
@@ -23,10 +7,15 @@ Page({
     title: '',
     cards: [],
     index: 0,
-    flipped: false,
     loading: true,
-    progress: '',
     isTablet: false,
+    // 浏览模式 / 卡片模式切换
+    mode: 'browse',  // 'browse' | 'card'
+    // 弹出层
+    popup: false,
+    popupCard: null,
+    // 已看过卡片 ID 集合
+    visited: {},
   },
 
   onLoad(options) {
@@ -34,7 +23,7 @@ Page({
     const boardId = options.boardId;
     const title = decodeURIComponent(options.title || '');
     wx.setNavigationBarTitle({ title: title || '卡片' });
-    this.setData({ title });
+    this.setData({ title, boardId });
     this.loadCards(boardId);
   },
 
@@ -42,52 +31,87 @@ Page({
     try {
       const data = await getCards(boardId);
       const cards = data.cards || [];
-      this.setData({
-        cards,
-        loading: false,
-        index: 0,
-        flipped: false,
-        progress: cards.length ? `1 / ${cards.length}` : '',
-      });
+      this.setData({ cards, loading: false, index: 0, progress: cards.length ? `1 / ${cards.length}` : '' });
     } catch (e) {
       wx.showToast({ title: '加载卡片失败', icon: 'none' });
       this.setData({ loading: false });
     }
   },
 
-  /** 点击卡片 → 翻到背面时计一次「已看」，再次点击翻回正面 */
-  onTapCard() {
-    if (!this.data.cards.length) return;
-    if (!this.data.flipped) {
-      const card = this.data.cards[this.data.index];
-      recordCardView(card.id, card.front || card.title);
+  /* ---- 模式切换 ---- */
+  switchMode(e) {
+    const mode = e.currentTarget.dataset.mode;
+    if (mode === 'card') {
+      this.setData({ mode: 'card', popup: false });
+    } else {
+      this.setData({ mode: 'browse', popup: false });
     }
-    this.setData({ flipped: !this.data.flipped });
   },
 
-  /** 下一张（循环） */
+  /* ---- 浏览模式 ---- */
+  onTapTile(e) {
+    const id = e.currentTarget.dataset.id;
+    const card = this.data.cards.find(c => c.id === id);
+    if (!card) return;
+    // 标记为已看
+    const visited = { ...this.data.visited, [id]: true };
+    recordCardView(card.id, card.zh || card.front);
+    this.setData({ popup: true, popupCard: card, visited });
+  },
+
+  closePopup() {
+    this.setData({ popup: false, popupCard: null });
+  },
+
+  /* ---- 卡片模式 ---- */
   next() {
     const n = this.data.cards.length;
     if (!n) return;
     let i = this.data.index + 1;
     if (i >= n) i = 0;
-    this.setData({ index: i, flipped: false, progress: `${i + 1} / ${n}` });
+    const card = this.data.cards[i];
+    recordCardView(card.id, card.zh || card.front);
+    this.setData({ index: i, progress: `${i + 1} / ${n}` });
   },
 
-  /** 上一张（循环） */
   prev() {
     const n = this.data.cards.length;
     if (!n) return;
     let i = this.data.index - 1;
     if (i < 0) i = n - 1;
-    this.setData({ index: i, flipped: false, progress: `${i + 1} / ${n}` });
+    const card = this.data.cards[i];
+    this.setData({ index: i, progress: `${i + 1} / ${n}` });
   },
 
-  goStats() {
-    wx.navigateTo({ url: '/pages/stats/stats' });
+  random() {
+    const n = this.data.cards.length;
+    if (!n) return;
+    const i = Math.floor(Math.random() * n);
+    const card = this.data.cards[i];
+    recordCardView(card.id, card.zh || card.front);
+    this.setData({ index: i, progress: `${i + 1} / ${n}` });
   },
 
-  goBoards() {
-    wx.navigateBack({ delta: 1 });
+  /* ---- 发音 ---- */
+  playSound(e) {
+    const type = e.currentTarget.dataset.type;
+    const card = this.data.cards[this.data.index];
+    if (!card) return;
+    const text = card[type] || '';
+    // 预留：接入 TTS 或播放音频 URL
+    console.log('播放发音:', type, text);
+    wx.showToast({ title: `🔊 ${text}`, icon: 'none', duration: 1500 });
   },
+
+  playSoundPopup(e) {
+    const type = e.currentTarget.dataset.type;
+    const card = this.data.popupCard;
+    if (!card) return;
+    const text = card[type] || '';
+    console.log('播放发音(弹出):', type, text);
+    wx.showToast({ title: `🔊 ${text}`, icon: 'none', duration: 1500 });
+  },
+
+  goStats() { wx.navigateTo({ url: '/pages/stats/stats' }); },
+  goBoards() { wx.navigateBack({ delta: 1 }); },
 });

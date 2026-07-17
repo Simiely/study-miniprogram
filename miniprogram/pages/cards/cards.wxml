@@ -1,40 +1,96 @@
-/* pages/cards/cards.wxml - 卡片学习页（翻面 / 大图双模式）
-   浏览模式（默认）：网格方阵 + 弹出详情
-   卡片模式：全屏大图 + 三行发音横幅 + 翻页导航
-   平板模式(.tablet 类)：图片铺满全屏、导航在右侧竖排 */
-
 <view class="page-root {{isTablet ? 'tablet' : ''}}">
-  <view class="container">
-    <view class="topbar">
-      <text class="link-back pill" bindtap="goBoards">📚 板块</text>
-      <text class="progress">{{progress}}</text>
-      <text class="link-stats pill" bindtap="goStats">📊 统计</text>
+  <view class="content">
+
+    <!-- ========== 顶部导航栏 ========== -->
+    <view class="mode-top">
+      <text class="badge">{{mode === 'browse' ? '浏览模式' : '卡片模式'}}</text>
+      <view class="links">
+        <text class="link" bindtap="goBoards">📚 首页</text>
+        <text wx:if="{{mode === 'browse'}}" class="link accent" bindtap="switchMode" data-mode="card">卡片模式</text>
+        <text wx:if="{{mode === 'card'}}" class="link" bindtap="switchMode" data-mode="browse">浏览模式</text>
+      </view>
     </view>
 
     <view wx:if="{{loading}}" class="loading">加载中…</view>
-
     <view wx:elif="{{cards.length === 0}}" class="empty">该板块暂无卡片</view>
 
-    <view wx:else class="card-area">
-      <view class="card {{flipped ? 'flipped' : ''}}" bindtap="onTapCard">
-        <view class="card-inner">
-          <view class="card-face card-front">
-            <text class="card-label">问题</text>
-            <text class="card-text">{{cards[index].front}}</text>
-            <text class="card-hint">点击翻面看答案</text>
+    <!-- ========== 浏览模式：方阵网格 ========== -->
+    <view wx:elif="{{mode === 'browse'}}" class="browse-grid {{isTablet ? 'cols-6' : 'cols-3'}}">
+      <view class="b-tile {{visited[item.id] ? 'visited' : ''}}"
+            wx:for="{{cards}}" wx:key="id"
+            data-id="{{item.id}}"
+            bindtap="onTapTile">
+        <view class="bt-flag" wx:if="{{visited[item.id]}}">✓</view>
+        <view class="bt-emoji">{{item.emoji}}</view>
+        <view class="bt-name">{{item.zh}}</view>
+      </view>
+    </view>
+
+    <!-- ========== 卡片模式：大图 + 发音 ========== -->
+    <view wx:elif="{{mode === 'card'}}" class="cards-content">
+      <view class="fc-counter">{{progress}}</view>
+      <view class="cards-stage flip-center">
+        <view class="learn-card">
+          <view class="lc-image">
+            <view class="lc-emoji">{{cards[index].emoji}}</view>
+            <view class="lc-ph">点 ⤢ 全屏查看</view>
           </view>
-          <view class="card-face card-back">
-            <text class="card-label">答案</text>
-            <text class="card-text">{{cards[index].back}}</text>
-            <text class="card-hint">点击返回</text>
+          <view class="lc-texts">
+            <view class="lc-zhen">
+              <view class="lc-cell lc-cell-zh" bindtap="playSound" data-type="zh">
+                <view class="lc-zh">{{cards[index].zh}}</view>
+                <view class="lc-sound">🔊</view>
+              </view>
+              <view class="lc-cell lc-cell-en" bindtap="playSound" data-type="en">
+                <view class="lc-en">{{cards[index].en}}</view>
+                <view class="lc-sound">🔊</view>
+              </view>
+            </view>
+            <view class="lc-line" bindtap="playSound" data-type="fact">
+              <view class="lc-fact">{{cards[index].fact}}</view>
+              <view class="lc-sound">🔊</view>
+            </view>
+          </view>
+        </view>
+        <!-- 导航按钮 -->
+        <view class="nav-stack">
+          <view class="nav-round ghost" bindtap="prev">‹</view>
+          <view class="nav-round accent" bindtap="random">🎲</view>
+          <view class="nav-round" bindtap="next">›</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- ========== 弹出层（浏览模式点卡片） ========== -->
+    <view wx:if="{{popup && popupCard}}" class="pop-mask">
+      <view class="pop-card">
+        <view class="pop-close" bindtap="closePopup">✕</view>
+        <view class="cards-stage flip-center">
+          <view class="learn-card">
+            <view class="lc-image">
+              <view class="lc-emoji">{{popupCard.emoji}}</view>
+              <view class="lc-ph">点击关闭</view>
+            </view>
+            <view class="lc-texts">
+              <view class="lc-zhen">
+                <view class="lc-cell lc-cell-zh" bindtap="playSoundPopup" data-type="zh">
+                  <view class="lc-zh">{{popupCard.zh}}</view>
+                  <view class="lc-sound">🔊</view>
+                </view>
+                <view class="lc-cell lc-cell-en" bindtap="playSoundPopup" data-type="en">
+                  <view class="lc-en">{{popupCard.en}}</view>
+                  <view class="lc-sound">🔊</view>
+                </view>
+              </view>
+              <view class="lc-line" bindtap="playSoundPopup" data-type="fact">
+                <view class="lc-fact">{{popupCard.fact}}</view>
+                <view class="lc-sound">🔊</view>
+              </view>
+            </view>
           </view>
         </view>
       </view>
-
-      <view class="nav">
-        <button class="nav-btn" bindtap="prev">← 上一张</button>
-        <button class="nav-btn primary" bindtap="next">下一张 →</button>
-      </view>
     </view>
+
   </view>
 </view>
