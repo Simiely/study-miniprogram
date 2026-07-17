@@ -9,6 +9,7 @@ App({
 
   onLaunch() {
     const envId = this.globalData.envId;
+    // 未填 envId 时跳过云初始化（本地模式）
     if (!envId || envId === 'your-cloud-env-id') {
       console.log('云开发未配置，使用本地数据模式');
       return;
