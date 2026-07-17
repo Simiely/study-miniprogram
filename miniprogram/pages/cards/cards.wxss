@@ -78,7 +78,7 @@
    📲 iPad .tablet — 物理尺寸与 iPhone 一致（mockup px ÷3）
    手机 mockup 画布 1320px→440pt 物理，iPad 按同样物理 pt 取值
    ============================================================ */
-.tablet .tablet-content { padding: 15px 20px 30px; min-height: 100vh; box-sizing: border-box; }
+.tablet .tablet-content { display: flex; flex-direction: column; height: 100vh; padding: 15px 20px 30px; box-sizing: border-box; }
 
 /* 顶栏 */
 .tablet .mode-top { margin-bottom: 10px; }
@@ -96,7 +96,7 @@
 .tablet .b-tile .bt-flag { top: 5px; right: 6px; font-size: 11px; width: 19px; height: 19px; }
 
 /* ===== 卡片模式 — iPad flip-flank（全屏图 + 底部浮动发音条） ===== */
-.tablet .cards-content-tablet { display: flex; flex-direction: column; height: 100%; }
+.tablet .cards-content-tablet { flex: 1; display: flex; flex-direction: column; min-height: 0; }
 .tablet .fc-counter { font-size: 14px; margin-bottom: 9px; font-weight: 600; text-align: center; color: var(--text-weak); }
 
 /* flip-flank 布局：图片铺满全宽，发音条浮动在底部 */
