@@ -8,13 +8,15 @@ App({
   },
 
   onLaunch() {
+    const envId = this.globalData.envId;
+    if (!envId || envId === 'your-cloud-env-id') {
+      console.log('云开发未配置，使用本地数据模式');
+      return;
+    }
     if (!wx.cloud) {
       console.error('当前基础库版本过低，请使用 2.2.3 或以上的基础库以使用云能力');
       return;
     }
-    wx.cloud.init({
-      env: this.globalData.envId,
-      traceUser: true,
-    });
+    wx.cloud.init({ env: envId, traceUser: true });
   },
 });
