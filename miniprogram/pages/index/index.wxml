@@ -1,0 +1,33 @@
+/* pages/index/index.wxml - 首页：板块列表
+   从 boards.json（云存储）读取板块数据，遍历展示每个学习板块。
+   每项显示：emoji + 中文名 + 英文名 + 卡片数标签。
+   点击板块跳转到 pages/cards 进入学习。 */
+
+<view class="page-root {{isTablet ? 'tablet' : ''}}">
+  <view class="container">
+    <view class="header">
+      <view class="hero">
+        <text class="hero-logo">📚</text>
+        <text class="hero-title">学习卡片</text>
+        <text class="hero-sub">边玩边学 · Word Cards</text>
+      </view>
+      <text class="stats-link pill" bindtap="goStats">📊 统计</text>
+    </view>
+
+    <view wx:if="{{loading}}" class="loading">加载中…</view>
+
+    <view wx:elif="{{boards.length === 0}}" class="empty">暂无板块，请上传 boards.json 到云存储</view>
+
+    <view wx:else class="board-list">
+      <view class="board-item" wx:for="{{boards}}" wx:key="id"
+            data-id="{{item.id}}" data-title="{{item.title}}" bindtap="onTapBoard">
+        <text wx:if="{{item.emoji}}" class="board-emoji">{{item.emoji}}</text>
+        <view class="board-main">
+          <text class="board-title">{{item.title}}</text>
+          <text class="board-sub" wx:if="{{item.desc}}">{{item.desc}}</text>
+        </view>
+        <text class="board-count" wx:if="{{item.cardCount}}">{{item.cardCount}} 张</text>
+      </view>
+    </view>
+  </view>
+</view>

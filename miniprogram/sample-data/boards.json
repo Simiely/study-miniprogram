@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "boards": [
+    { "id": "animal", "title": "动物", "desc": "21 种动物中英双语", "emoji": "🦁", "order": 1, "cardCount": 21, "status": "active" },
+    { "id": "fruit", "title": "水果", "desc": "即将推出", "emoji": "🍎", "order": 2, "cardCount": 0, "status": "coming" },
+    { "id": "transport", "title": "交通工具", "desc": "即将推出", "emoji": "🚗", "order": 3, "cardCount": 0, "status": "coming" },
+    { "id": "colors", "title": "颜色形状", "desc": "即将推出", "emoji": "🌈", "order": 4, "cardCount": 0, "status": "coming" },
+    { "id": "numbers", "title": "数字", "desc": "即将推出", "emoji": "🔢", "order": 5, "cardCount": 0, "status": "coming" },
+    { "id": "body", "title": "身体部位", "desc": "即将推出", "emoji": "👋", "order": 6, "cardCount": 0, "status": "coming" }
+  ]
+}

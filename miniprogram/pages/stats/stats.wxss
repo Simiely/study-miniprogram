@@ -1,0 +1,37 @@
+/* pages/stats/stats.wxss - 统计页样式
+   概览双卡 + 排行列表 + 清空按钮 + 平板大屏适配 */
+
+.container { padding: 32rpx 24rpx; min-height: 100vh; box-sizing: border-box; }
+
+.header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 40rpx; }
+.title { font-size: 44rpx; font-weight: 700; color: var(--text); }
+.date { font-size: 24rpx; color: var(--text-weak); }
+
+.summary { display: flex; gap: 24rpx; margin-bottom: 40rpx; }
+.stat-item {
+  flex: 1; background: var(--card-bg); border-radius: var(--radius-box);
+  padding: 32rpx 24rpx; box-shadow: var(--shadow-soft); text-align: center;
+}
+.stat-num { font-size: 64rpx; font-weight: 700; color: var(--primary); }
+.stat-label { font-size: 24rpx; color: var(--text-weak); margin-top: 8rpx; }
+
+.rank-list { background: var(--card-bg); border-radius: var(--radius-box); padding: 28rpx 24rpx; box-shadow: var(--shadow-soft); }
+.rank-title { font-size: 32rpx; font-weight: 600; margin-bottom: 20rpx; }
+.rank-item { display: flex; align-items: center; gap: 20rpx; padding: 20rpx 0; border-bottom: 2rpx solid var(--line); }
+.rank-item:last-child { border-bottom: none; }
+.rank-index {
+  width: 48rpx; height: 48rpx; border-radius: 50%; background: var(--primary-soft);
+  color: var(--primary); font-size: 26rpx; font-weight: 700; display: flex; align-items: center; justify-content: center;
+}
+.rank-name { flex: 1; font-size: 30rpx; color: var(--text); }
+.rank-count { font-size: 26rpx; color: var(--text-weak); }
+
+.clear-btn {
+  margin-top: 48rpx; width: 100%; font-size: 28rpx; padding: 24rpx;
+  border-radius: 999rpx; background: #d97777; color: #fff; font-weight: 600;
+}
+
+/* ---- 平板布局 ---- */
+.tablet .container { max-width: 720px; margin: 0 auto; padding: 40px 32px; }
+.tablet .title { font-size: 48px; }
+.tablet .stat-num { font-size: 72px; }

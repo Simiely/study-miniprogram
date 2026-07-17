@@ -1,0 +1,34 @@
+/* pages/stats/stats.wxml - 统计页
+   展示：今日日期 / 总浏览数 / 看过不同卡片数 / 浏览次数 Top5
+   数据来自本地 wx.Storage 快照（每日 0:00 冻结一次） */
+
+<view class="page-root {{isTablet ? 'tablet' : ''}}">
+  <view class="container">
+    <view class="header">
+      <text class="title">今日统计</text>
+      <text class="date">{{date}}</text>
+    </view>
+
+    <view class="summary">
+      <view class="stat-item">
+        <text class="stat-num">{{totalViews}}</text>
+        <text class="stat-label">总浏览数</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-num">{{distinctCards}}</text>
+        <text class="stat-label">看过卡片</text>
+      </view>
+    </view>
+
+    <view wx:if="{{list.length > 0}}" class="rank-list">
+      <text class="rank-title">浏览最多的卡片</text>
+      <view class="rank-item" wx:for="{{list}}" wx:key="id">
+        <text class="rank-index">{{index + 1}}</text>
+        <text class="rank-name">{{item.name}}</text>
+        <text class="rank-count">{{item.count}} 次</text>
+      </view>
+    </view>
+
+    <button class="clear-btn" bindtap="onClear">清空今日统计</button>
+  </view>
+</view>

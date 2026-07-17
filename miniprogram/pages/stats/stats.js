@@ -1,0 +1,47 @@
+// pages/stats/stats.js - 统计页（每日 0 点刷新的快照 + 清空）
+const { getDailySnapshot, clearStats } = require('../../utils/stats');
+const { isTablet } = require('../../utils/device');
+
+Page({
+  data: {
+    date: '',
+    totalViews: 0,
+    distinctCards: 0,
+    list: [],
+    isTablet: false,
+  },
+
+  // 每次进入页面都刷新显示；由于快照当天内冻结，重进不会实时跳动
+  onShow() {
+    this.setData({ isTablet: isTablet() });
+    this.refresh();
+  },
+
+  refresh() {
+    const snap = getDailySnapshot();
+    this.setData({
+      date: snap.date,
+      totalViews: snap.totalViews,
+      distinctCards: snap.distinctCards,
+      list: snap.list,
+    });
+  },
+
+  onClear() {
+    wx.showModal({
+      title: '清空统计',
+      content: '确定要清空所有看卡统计吗？此操作不可恢复。',
+      success: (res) => {
+        if (res.confirm) {
+          clearStats();
+          this.refresh();
+          wx.showToast({ title: '已清空', icon: 'success' });
+        }
+      },
+    });
+  },
+
+  onShareAppMessage() {
+    return { title: '我的学习卡片统计', path: '/pages/index/index' };
+  },
+});
