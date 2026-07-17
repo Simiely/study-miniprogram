@@ -1,0 +1,53 @@
+/* app.wxss - 全局样式（word-cards 暖色自然风设计令牌）
+   配色取自参考项目 word-cards：
+   奶油底 #f5f0e8 / 白卡 #ffffff / 主绿 #4a7c59 / 暖桃 #e8a87c / 文字 #3c3c3c
+   手机端用 rpx 自适应；平板端由页面根节点挂 .tablet 类，样式用 px 重写（见各页 wxss） */
+
+page {
+  /* 设计令牌 */
+  --bg: #f5f0e8;
+  --card-bg: #ffffff;
+  --primary: #4a7c59;
+  --primary-soft: #e8f0ea;
+  --accent: #e8a87c;
+  --text: #3c3c3c;
+  --text-weak: #9a9a90;
+  --line: #e7e0d4;
+  --radius-card: 48rpx;   /* 卡片大圆角（≈24px@375） */
+  --radius-box: 32rpx;    /* 方块圆角（≈16px@375） */
+  --shadow-soft: 0 4rpx 20rpx rgba(0, 0, 0, 0.05);
+  --shadow-card: 0 12rpx 40rpx rgba(74, 124, 89, 0.10);
+
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(ellipse at 18% 12%, rgba(74, 124, 89, 0.06) 0%, transparent 55%),
+    radial-gradient(ellipse at 85% 88%, rgba(232, 168, 124, 0.07) 0%, transparent 55%);
+  background-attachment: fixed;
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+  font-size: 28rpx;
+  -webkit-font-smoothing: antialiased;
+}
+
+view, text, button { box-sizing: border-box; }
+
+/* 去掉小程序 button 默认边框 */
+button::after { border: none; }
+
+/* 根容器：承载 .tablet 平板类 */
+.page-root {
+  min-height: 100vh;
+}
+
+/* 通用胶囊按钮（wxss 复用） */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999rpx;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  line-height: 1.4;
+}
+
+.muted { color: var(--text-weak); }

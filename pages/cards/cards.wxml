@@ -1,0 +1,35 @@
+<view class="page-root {{isTablet ? 'tablet' : ''}}">
+  <view class="container">
+    <view class="topbar">
+      <text class="link-back pill" bindtap="goBoards">📚 板块</text>
+      <text class="progress">{{progress}}</text>
+      <text class="link-stats pill" bindtap="goStats">📊 统计</text>
+    </view>
+
+    <view wx:if="{{loading}}" class="loading">加载中…</view>
+
+    <view wx:elif="{{cards.length === 0}}" class="empty">该板块暂无卡片</view>
+
+    <view wx:else class="card-area">
+      <view class="card {{flipped ? 'flipped' : ''}}" bindtap="onTapCard">
+        <view class="card-inner">
+          <view class="card-face card-front">
+            <text class="card-label">问题</text>
+            <text class="card-text">{{cards[index].front}}</text>
+            <text class="card-hint">点击翻面看答案</text>
+          </view>
+          <view class="card-face card-back">
+            <text class="card-label">答案</text>
+            <text class="card-text">{{cards[index].back}}</text>
+            <text class="card-hint">点击返回</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="nav">
+        <button class="nav-btn" bindtap="prev">← 上一张</button>
+        <button class="nav-btn primary" bindtap="next">下一张 →</button>
+      </view>
+    </view>
+  </view>
+</view>

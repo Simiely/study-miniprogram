@@ -1,0 +1,104 @@
+/* pages/index/index.wxss - 板块列表（word-cards 暖色风）
+   手机：单列大卡；平板(.tablet)：同尺寸卡片多列居中网格 */
+
+.container {
+  padding: 32rpx 24rpx 60rpx;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+/* ---- 头部 ---- */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24rpx 8rpx 28rpx;
+}
+.hero { display: flex; flex-direction: column; }
+.hero-logo { font-size: 64rpx; line-height: 1; margin-bottom: 10rpx; }
+.hero-title { font-size: 44rpx; font-weight: 700; color: var(--text); letter-spacing: 1px; }
+.hero-sub { font-size: 24rpx; color: var(--text-weak); margin-top: 6rpx; letter-spacing: 0.5px; }
+
+.stats-link {
+  background: var(--card-bg);
+  color: var(--primary);
+  border: 4rpx solid var(--line);
+  font-size: 28rpx;
+  padding: 14rpx 30rpx;
+  box-shadow: var(--shadow-soft);
+}
+.stats-link:active { border-color: var(--primary); transform: scale(0.96); }
+
+/* ---- 板块列表 ---- */
+.board-list {
+  display: flex;
+  flex-direction: column;
+  gap: 24rpx;
+}
+.board-item {
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+  background: var(--card-bg);
+  border-radius: var(--radius-box);
+  padding: 32rpx 30rpx;
+  box-shadow: var(--shadow-soft);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+.board-item:active { transform: scale(0.975); box-shadow: var(--shadow-card); }
+.board-emoji { font-size: 64rpx; line-height: 1; }
+.board-main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+.board-title { font-size: 36rpx; color: var(--text); font-weight: 600; }
+.board-sub { font-size: 24rpx; color: var(--text-weak); margin-top: 8rpx; }
+.board-count {
+  flex-shrink: 0;
+  font-size: 26rpx;
+  color: var(--primary);
+  background: var(--primary-soft);
+  padding: 8rpx 20rpx;
+  border-radius: 999rpx;
+}
+
+.loading, .empty {
+  text-align: center;
+  color: var(--text-weak);
+  font-size: 28rpx;
+  margin-top: 120rpx;
+}
+
+/* ============================================================
+   平板布局（iPad / 大屏）：screenWidth>=768 命中 .tablet
+   组件尺寸保持与手机一致，仅把间距与位置重排为多列居中网格
+   —— 不放大，只重排。样式一律用 px。
+   ============================================================ */
+.tablet .container {
+  padding: 40px 32px 64px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+.tablet .header { padding: 32px 8px 36px; }
+.tablet .hero-logo { font-size: 72px; }
+.tablet .hero-title { font-size: 48px; }
+.tablet .hero-sub { font-size: 26px; }
+.tablet .stats-link { font-size: 28px; padding: 14px 32px; border-width: 2px; }
+
+/* 同尺寸卡片，多列居中（每个 ≈ 手机宽度） */
+.tablet .board-list {
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 28px;
+}
+.tablet .board-item {
+  width: 340px;            /* 约等于手机宽度卡片，不放大 */
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 32px 30px;    /* 与手机一致 */
+  border-radius: 16px;      /* 24rpx ≈ 手机尺寸 */
+  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+}
+.tablet .board-emoji { font-size: 64px; }
+.tablet .board-title { font-size: 36px; }
+.tablet .board-sub { font-size: 24px; }
+.tablet .board-count { font-size: 26px; padding: 8px 20px; }

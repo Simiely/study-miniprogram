@@ -1,0 +1,110 @@
+/* pages/stats/stats.wxss - 统计页（word-cards 暖色风）
+   手机：单列堆叠；平板(.tablet)：整体居中成舒适栏宽，组件尺寸不变 */
+
+.container {
+  padding: 32rpx 24rpx 64rpx;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+.date-tip {
+  font-size: 24rpx;
+  color: var(--text-weak);
+  text-align: center;
+  margin-bottom: 28rpx;
+  display: block;
+}
+
+/* ---- 概览 ---- */
+.summary {
+  display: flex;
+  gap: 24rpx;
+  margin-bottom: 32rpx;
+}
+.summary-card {
+  flex: 1;
+  background: var(--card-bg);
+  border-radius: var(--radius-box);
+  padding: 36rpx 24rpx;
+  text-align: center;
+  box-shadow: var(--shadow-soft);
+}
+.summary-num {
+  font-size: 56rpx;
+  font-weight: 700;
+  color: var(--primary);
+  display: block;
+  line-height: 1.1;
+}
+.summary-label {
+  font-size: 24rpx;
+  color: var(--text-weak);
+  margin-top: 12rpx;
+  display: block;
+}
+
+/* ---- 排行 ---- */
+.list-title {
+  font-size: 30rpx;
+  color: var(--text);
+  font-weight: 600;
+  margin: 8rpx 8rpx 20rpx;
+  display: block;
+}
+.rank-list {
+  background: var(--card-bg);
+  border-radius: var(--radius-box);
+  overflow: hidden;
+  box-shadow: var(--shadow-soft);
+}
+.rank-item {
+  display: flex;
+  align-items: center;
+  padding: 28rpx 30rpx;
+  border-bottom: 2rpx solid #f1ece3;
+}
+.rank-item:last-child { border-bottom: none; }
+.rank-no {
+  width: 56rpx;
+  font-size: 32rpx;
+  color: var(--accent);
+  font-weight: 700;
+}
+.rank-title { flex: 1; font-size: 30rpx; color: var(--text); }
+.rank-count { font-size: 30rpx; color: var(--primary); font-weight: 600; }
+
+.clear-btn {
+  margin-top: 48rpx;
+  background: var(--card-bg);
+  color: #e0795f;
+  border: 4rpx solid #f0d9cf;
+  border-radius: 999rpx;
+  font-size: 30rpx;
+  font-weight: 600;
+}
+.clear-btn:active { transform: scale(0.98); }
+
+.empty {
+  text-align: center;
+  color: var(--text-weak);
+  font-size: 28rpx;
+  margin-top: 120rpx;
+}
+
+/* ============================================================
+   平板布局（iPad / 大屏）：.tablet 命中
+   整体居中成舒适栏宽（约 860px），组件尺寸不变，只重排位置。
+   ============================================================ */
+.tablet .container { max-width: 860px; margin: 0 auto; padding: 40px 32px 64px; }
+.tablet .date-tip { font-size: 24px; margin-bottom: 32px; }
+.tablet .summary { gap: 28px; margin-bottom: 36px; }
+.tablet .summary-card { padding: 40px 24px; border-radius: 16px; }
+.tablet .summary-num { font-size: 60px; }
+.tablet .summary-label { font-size: 24px; }
+.tablet .list-title { font-size: 30px; }
+.tablet .rank-list { border-radius: 16px; }
+.tablet .rank-item { padding: 28px 30px; border-bottom-width: 1px; }
+.tablet .rank-no { font-size: 32px; }
+.tablet .rank-title { font-size: 30px; }
+.tablet .rank-count { font-size: 30px; }
+.tablet .clear-btn { font-size: 30px; padding: 24rpx 0; border-width: 2px; }

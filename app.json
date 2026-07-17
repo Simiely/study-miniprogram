@@ -1,0 +1,15 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/cards/cards",
+    "pages/stats/stats"
+  ],
+  "window": {
+    "navigationBarBackgroundColor": "#4a7c59",
+    "navigationBarTitleText": "学习卡片",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#f5f0e8"
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

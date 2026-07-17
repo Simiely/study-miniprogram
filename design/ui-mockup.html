@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>学习卡片小程序 · 双布局 UI 示意（真实分辨率 · 含两种模式）</title>
+<style>
+  /* ============================================================
+     设计令牌（取自参考项目 word-cards）
+     全部以「真实设备像素」为单位 —— 手机端即基准尺寸，
+     平板端复用同一套尺寸，不放大，只重排间距/位置。
+     ============================================================ */
+  :root{
+    --bg:#f5f0e8;            /* 奶油底 */
+    --card:#ffffff;          /* 白卡 */
+    --primary:#4a7c59;       /* 主绿 */
+    --accent:#e8a87c;        /* 暖桃 */
+    --text:#3c3c3c;          /* 正文 */
+    --muted:#888888;         /* 辅助文字 */
+    --radius:72px;           /* 卡片圆角 = 24px(网页) × 3(手机3x) */
+    --shadow:0 24px 60px rgba(74,124,89,.14);
+    --shadow-sm:0 10px 28px rgba(60,60,60,.10);
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{
+    font-family:'PingFang SC','Microsoft YaHei','Noto Sans SC',-apple-system,sans-serif;
+    background:#1f1f27;color:#e9e9ef;
+    padding:40px 32px 80px;line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* ---------- 页面抬头 ---------- */
+  .page-head{max-width:1240px;margin:0 auto 36px;}
+  .page-head h1{font-size:30px;font-weight:700;letter-spacing:.5px;}
+  .page-head p{font-size:15px;color:#a9a9b6;margin-top:10px;max-width:980px;}
+  .legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px;}
+  .legend span{
+    font-size:13px;color:#cfcfd8;background:rgba(255,255,255,.06);
+    border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:7px 12px;
+  }
+  .legend b{color:var(--accent);font-weight:600;}
+
+  /* ---------- 设备分区 ---------- */
+  .device-section{max-width:1320px;margin:0 auto 56px;}
+  .device-label{
+    display:flex;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:16px;
+  }
+  .device-label .name{font-size:18px;font-weight:700;color:#fff;}
+  .device-label .res{
+    font-size:13px;color:var(--accent);background:rgba(232,168,124,.12);
+    border:1px solid rgba(232,168,124,.3);border-radius:8px;padding:5px 10px;
+    font-variant-numeric:tabular-nums;
+  }
+  .device-label .note{font-size:13px;color:#9a9aa6;}
+  .screens-row{
+    display:flex;gap:22px;overflow-x:auto;padding-bottom:10px;
+  }
+  .screens-row::-webkit-scrollbar{height:8px;}
+  .screens-row::-webkit-scrollbar-thumb{background:#3a3a44;border-radius:4px;}
+
+  .frame{position:relative;border-radius:44px;overflow:hidden;flex:0 0 auto;
+    box-shadow:0 30px 70px rgba(0,0,0,.45);background:var(--bg);}
+  .frame .tag{
+    position:absolute;left:0;right:0;bottom:0;text-align:center;
+    font-size:13px;color:#fff;background:rgba(40,40,48,.78);
+    padding:8px 0;letter-spacing:1px;z-index:5;
+  }
+  .frame.phone{width:238px;height:516px;}
+  .frame.ipadp{width:389px;height:519px;}
+  .frame.ipadl{width:505px;height:379px;}
+
+  /* ============================================================
+     屏幕画布：真实分辨率 + 缩放显示
+     ============================================================ */
+  .screen{position:absolute;top:0;left:0;background:var(--bg);color:var(--text);
+    transform-origin:0 0;overflow:hidden;}
+  .screen.phone{width:1320px;height:2868px;transform:scale(.18);}
+  .screen.ipadp{width:2048px;height:2732px;transform:scale(.19);}
+  .screen.ipadl{width:2732px;height:2048px;transform:scale(.185);}
+
+  /* ---------- 状态栏 ---------- */
+  .statusbar{height:120px;display:flex;align-items:center;justify-content:space-between;
+    padding:0 64px;font-size:38px;color:var(--muted);font-weight:600;}
+  .statusbar .bat{width:74px;height:38px;border:3px solid var(--muted);border-radius:8px;
+    position:relative;}
+  .statusbar .bat::after{content:"";position:absolute;right:-12px;top:11px;width:8px;height:16px;
+    background:var(--muted);border-radius:0 4px 4px 0;}
+  .statusbar .bat::before{content:"";position:absolute;left:6px;top:6px;bottom:6px;width:46px;
+    background:var(--primary);border-radius:3px;}
+
+  /* ---------- 内容容器 ---------- */
+  .content{padding:44px 60px 90px;position:relative;height:100%;}
+  .app-header{margin-bottom:40px;}
+  .app-header .h-title{font-size:84px;font-weight:700;color:var(--text);}
+  .app-header .h-sub{font-size:40px;color:var(--muted);margin-top:14px;}
+  .app-header.small .h-title{font-size:64px;}
+  .section-title{font-size:58px;font-weight:700;margin:8px 0 40px;display:flex;align-items:center;gap:20px;}
+  .section-title::before{content:"";width:16px;height:58px;background:var(--accent);border-radius:8px;}
+
+  /* ---------- 顶栏（模式切换，卡片模式/浏览模式共用）---------- */
+  .mode-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:30px;}
+  .mode-top .badge{background:var(--primary);color:#fff;font-size:36px;font-weight:600;
+    padding:18px 44px;border-radius:999px;white-space:nowrap;}
+  .mode-top .links{display:flex;gap:18px;}
+  .mode-top .link{background:var(--card);border:2px solid #e0dcd4;color:var(--text);
+    font-size:33px;font-weight:600;padding:16px 32px;border-radius:999px;white-space:nowrap;}
+  .mode-top .link:active{border-color:var(--primary);color:var(--primary);}
+  .mode-top .link.accent{border-color:var(--accent);color:var(--accent);}
+
+  /* ---------- 板块卡片（首页）---------- */
+  .home-grid{display:grid;gap:48px;}
+  .home-grid.cols-2{grid-template-columns:repeat(2,1fr);gap:44px;}
+  .home-grid.cols-3{grid-template-columns:repeat(3,1fr);gap:40px;}
+  .home-grid.cols-4{grid-template-columns:repeat(4,1fr);gap:36px;}
+
+  .board-card{background:var(--card);border-radius:var(--radius);padding:56px;
+    box-shadow:var(--shadow-sm);position:relative;overflow:hidden;}
+  .board-card .bc-emoji{font-size:118px;line-height:1;}
+  .board-card .bc-title{font-size:64px;font-weight:700;margin-top:28px;color:var(--text);}
+  .board-card .bc-en{font-size:40px;color:var(--muted);margin-top:12px;}
+  .board-card .bc-tag{display:inline-block;margin-top:30px;background:#eef2e6;color:var(--primary);
+    font-size:34px;font-weight:600;padding:16px 34px;border-radius:999px;}
+  /* 即将推出板块：灰色 + 降低透明度 */
+  .board-card.coming{opacity:.45;filter:grayscale(.7);}
+  .board-card.coming .bc-tag{background:#e8e3d8;color:var(--muted);}
+
+  /* ---------- 浏览模式方阵 ---------- */
+  .browse-grid{display:grid;gap:28px;margin-top:8px;}
+  .browse-grid.cols-3{grid-template-columns:repeat(3,1fr);}
+  .browse-grid.cols-6{grid-template-columns:repeat(6,1fr);gap:24px;}
+  .browse-grid.cols-8{grid-template-columns:repeat(8,1fr);gap:20px;}
+
+  .b-tile{aspect-ratio:1;border-radius:40px;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;position:relative;overflow:hidden;
+    transition:opacity .3s,transform .15s;}
+  .b-tile:active{transform:scale(.94);}
+  .b-tile .bt-emoji{font-size:132px;line-height:1.1;}
+  .b-tile .bt-name{font-size:40px;color:#fff;font-weight:600;margin-top:14px;
+    text-shadow:0 2px 6px rgba(0,0,0,.35);}
+  /* 已浏览标记：参考实现 opacity:0.1（10% 透明度） */
+  .b-tile.visited{opacity:.1;}
+  .b-tile .bt-flag{position:absolute;top:16px;right:18px;font-size:34px;color:#fff;
+    background:rgba(0,0,0,.35);border-radius:50%;width:56px;height:56px;
+    display:flex;align-items:center;justify-content:center;}
+
+  /* ---------- 卡片弹出层（浏览模式点开详情）---------- */
+  /* 弹出层铺满屏幕（手机 / iPad 一致） */
+  .pop-mask{position:absolute;inset:0;background:rgba(20,18,14,.90);z-index:60;}
+  .pop-card{position:absolute;inset:0;background:var(--bg);border-radius:0;
+    box-shadow:none;overflow:hidden;display:flex;flex-direction:column;}
+  .pop-card .pop-close{position:absolute;top:40px;right:40px;z-index:10;
+    width:104px;height:104px;border-radius:50%;background:rgba(0,0,0,.5);color:#fff;
+    font-size:54px;display:flex;align-items:center;justify-content:center;}
+  /* 弹出层内部直接复用卡片模式的 .learn-card（flip-center / flip-flank），
+     保证弹出层与卡片模式视觉完全一致：仅去掉顶部 mode-top / 计数 / 导航，保留右上角 ✕ */
+  .pop-card .cards-stage{flex:1;min-height:0;width:100%;}
+  /* iPhone 浏览模式·卡片弹出：底部加大安全留白（140px），防止误触发音横幅 */
+  .pop-card .cards-stage.flip-center .learn-card{padding-bottom:140px;}
+  /* iPad 弹出层：内部复制卡片模式的容器链（content + mode-top spacer + fc-counter spacer）
+     确保弹出层的排版逻辑与卡片模式完全一致 */
+  .pop-replica{display:flex;flex-direction:column;flex:1;padding:44px 60px 90px;}
+  .pop-spacer-mode{flex:none;height:109px;}
+  .pop-spacer-counter{flex:none;height:78px;}
+
+  /* 点击 ⤢ 缩放按钮 → 全屏查看图片（覆盖整屏，z-index 最高） */
+  .img-fs{position:fixed;inset:0;background:rgba(12,12,12,.94);z-index:9999;
+    display:none;align-items:center;justify-content:center;flex-direction:column;cursor:pointer;}
+  .img-fs.show{display:flex;}
+  .img-fs .fs-emoji{font-size:min(72vh,72vw);line-height:1;
+    filter:drop-shadow(0 12px 40px rgba(0,0,0,.5));}
+  .img-fs .fs-close{position:absolute;top:40px;right:40px;width:100px;height:100px;border-radius:50%;
+    background:rgba(255,255,255,.92);color:#1a1a1a;font-size:52px;
+    display:flex;align-items:center;justify-content:center;box-shadow:0 8px 22px rgba(0,0,0,.4);}
+  .img-fs .fs-tip{position:absolute;bottom:48px;left:0;right:0;text-align:center;
+    font-size:34px;color:rgba(255,255,255,.75);}
+
+  /* ---------- 卡片学习页（大图 + 三块可点击发音）---------- */
+  .cards-content{display:flex;flex-direction:column;height:100%;}
+  .fc-counter{text-align:center;font-size:42px;color:var(--muted);margin-bottom:28px;font-weight:600;}
+
+  .cards-stage{flex:1;display:flex;align-items:center;justify-content:center;min-height:0;}
+  .cards-stage.flip-center{position:relative;}
+  .cards-stage.flip-center .learn-card{width:100%;height:100%;}
+  .cards-stage.flip-center .nav-stack{position:absolute;right:36px;top:62%;transform:translateY(-50%);
+    z-index:10;display:flex;flex-direction:column;align-items:center;gap:38px;}
+  .cards-stage.flip-center .nav-round{width:105px;height:105px;font-size:50px;background:rgba(74,124,89,.5);}
+  .cards-stage.flip-center .nav-round.ghost{background:rgba(238,242,230,.5);border:3px solid rgba(74,124,89,.5);}
+  .cards-stage.flip-center .nav-round.accent{background:rgba(232,168,124,.6);}
+  /* iPad 侧边导航：图片铺满整个屏幕（不缩放，仅重排） */
+  .cards-stage.flip-flank{gap:0;align-items:stretch;justify-content:center;}
+  .cards-stage.flip-flank .learn-card{width:100%;height:100%;padding:0;background:transparent;
+    box-shadow:none;position:relative;}
+  /* iPad 卡片模式：图片上移，底部留出整条奶油区给发音横幅（不再压住三行发音） */
+  .cards-stage.flip-flank .lc-image{flex:1;min-height:0;margin:0 0 480px 0;border-radius:48px;
+    background:linear-gradient(140deg,#eef3e4 0%,#dce7cf 100%);}
+  /* 三块发音浮在图片底部半透明条，左右无边距 = 发声条宽度对齐图片宽度 */
+  .cards-stage.flip-flank .lc-texts{position:absolute;left:0;right:0;bottom:0;z-index:4;
+    background:linear-gradient(to top, rgba(245,240,232,.96) 58%, rgba(245,240,232,0));
+    padding:64px 0 96px;}
+  /* 翻页 / 随机按钮：竖排浮在图片右侧，缩放至 70%（105px） */
+  .cards-stage.flip-flank .nav-stack{position:absolute;right:48px;top:60%;transform:translateY(-50%);
+    z-index:6;display:flex;flex-direction:column;align-items:center;gap:44px;}
+  .cards-stage.flip-flank .nav-round{width:105px;height:105px;font-size:50px;background:rgba(74,124,89,.5);}
+  .cards-stage.flip-flank .nav-round.ghost{background:rgba(238,242,230,.5);border:3px solid rgba(74,124,89,.5);}
+  .cards-stage.flip-flank .nav-round.accent{background:rgba(232,168,124,.6);}
+
+  .learn-card{background:var(--card);border-radius:var(--radius);padding:56px;
+    box-shadow:var(--shadow);display:flex;flex-direction:column;}
+  /* 图片区：占满纵向空间，尽可能大 */
+  .learn-card .lc-image{flex:1;min-height:0;margin-bottom:44px;
+    background:linear-gradient(140deg,#eef3e4 0%,#dce7cf 100%);
+    border-radius:48px;display:flex;align-items:center;justify-content:center;
+    position:relative;overflow:hidden;}
+  .learn-card .lc-image .lc-emoji{font-size:520px;line-height:1;}
+  .learn-card .lc-image .lc-ph{position:absolute;bottom:26px;left:0;right:0;text-align:center;
+    font-size:32px;color:var(--muted);opacity:.72;}
+  .learn-card .lc-image .lc-zoom{position:absolute;bottom:30px;right:30px;width:88px;height:88px;z-index:8;
+    border-radius:50%;background:rgba(255,255,255,.85);color:var(--primary);
+    font-size:44px;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+  .learn-card .lc-image .lc-zoom:active{transform:scale(.94);}
+  /* 三个可点击发音文本行 */
+  .learn-card .lc-texts{display:flex;flex-direction:column;gap:22px;}
+  .lc-line{display:flex;align-items:center;justify-content:space-between;gap:28px;
+    padding:30px 38px;background:#faf8f3;border-radius:34px;cursor:pointer;
+    transition:background .15s ease,transform .15s ease;}
+  .lc-line:active{background:#f1ede4;transform:scale(.99);}
+  .lc-line .lc-zh{font-size:88px;font-weight:700;color:var(--text);line-height:1.15;}
+  .lc-line .lc-en{font-size:48px;color:var(--muted);line-height:1.15;}
+  .lc-line .lc-fact{font-size:42px;color:var(--text);line-height:1.55;}
+  .lc-line .lc-sound, .lc-cell .lc-sound{width:64px;height:64px;border-radius:50%;background:var(--primary);color:#fff;
+    flex:0 0 auto;display:flex;align-items:center;justify-content:center;font-size:32px;
+    box-shadow:0 8px 18px rgba(74,124,89,.30);opacity:.2;}
+  /* 中文 / 英文 同排：左 中文、右 英文，各自整块可点发音 */
+  .lc-zhen{display:flex;gap:22px;}
+  .lc-cell{flex:1;min-width:0;display:flex;align-items:center;justify-content:space-between;gap:20px;
+    padding:30px 38px;background:#faf8f3;border-radius:34px;cursor:pointer;
+    transition:background .15s ease,transform .15s ease;}
+  .lc-cell:active{background:#f1ede4;transform:scale(.99);}
+  .lc-cell-zh .lc-zh{font-size:88px;font-weight:700;color:var(--text);line-height:1.15;}
+  .lc-cell-en{justify-content:space-between;}
+  .lc-cell-en .lc-en{font-size:88px;color:var(--text);line-height:1.15;}
+
+  .nav-round{width:150px;height:150px;border-radius:50%;background:var(--primary);color:#fff;
+    display:flex;align-items:center;justify-content:center;font-size:72px;flex:0 0 auto;
+    box-shadow:var(--shadow-sm);}
+  .nav-round.ghost{background:#eef2e6;color:var(--primary);}
+
+  .nav-count{font-size:40px;color:var(--muted);font-weight:600;white-space:nowrap;}
+
+  /* ---------- 统计页 ---------- */
+  .stats-wrap.center{max-width:1120px;margin:0 auto;}
+  .stats-wrap.split{display:flex;gap:64px;align-items:flex-start;}
+  .stats-wrap.split .col-left{flex:0 0 980px;}
+  .stats-wrap.split .col-right{flex:1;}
+
+  .stat-row{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-bottom:48px;}
+  .stat-tile{background:var(--card);border-radius:56px;padding:56px;box-shadow:var(--shadow-sm);}
+  .stat-tile .st-num{font-size:104px;font-weight:700;color:var(--primary);line-height:1;}
+  .stat-tile .st-label{font-size:40px;color:var(--muted);margin-top:18px;}
+
+  .top-list{background:var(--card);border-radius:56px;padding:44px 56px;box-shadow:var(--shadow-sm);}
+  .top-list .tl-title{font-size:48px;font-weight:700;margin-bottom:24px;color:var(--text);}
+  .tl-item{display:flex;align-items:center;gap:28px;padding:30px 0;border-bottom:2px solid #f0ece4;}
+  .tl-item:last-child{border-bottom:none;}
+  .tl-rank{width:64px;height:64px;border-radius:50%;background:#eef2e6;color:var(--primary);
+    font-size:38px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
+  .tl-name{font-size:50px;font-weight:600;flex:1;color:var(--text);}
+  .tl-count{font-size:42px;color:var(--muted);}
+
+  .btn-clear{margin-top:56px;background:#d97777;color:#fff;font-size:48px;font-weight:600;
+    text-align:center;padding:40px;border-radius:999px;box-shadow:var(--shadow-sm);}
+  .stats-wrap.split .btn-clear{margin-top:40px;}
+</style>
+</head>
+<body>
+
+  <div class="page-head">
+    <h1>学习卡片小程序 · 双布局 UI 示意（含 浏览模式 / 卡片模式）</h1>
+    <p>参考 <b style="color:#e8a87c">word-cards</b> 视觉语言（奶油底 / 主绿 / 暖桃）与官方规划：<b style="color:#e8a87c">两种模式</b> ——
+       <b>浏览模式</b>（拼音排序方阵、点卡片弹出详情、已看卡片 10% 透明标记、再来一次清除）；
+       <b>卡片模式</b>（大图 + 中文名/英文名同排左右、科普独立，整块可点发音；随机/上下张翻页）。
+       三端均按设备<b style="color:#e8a87c">真实分辨率</b>绘制；平板<b style="color:#e8a87c">不放大</b>手机组件，仅多列网格 / 侧边导航 / 居中重排。</p>
+    <div class="legend">
+      <span>📱 iPhone 17 Pro Max · <b>1320×2868</b> · 竖屏（基准）</span>
+      <span>📲 iPad Pro 12.9″ · <b>2048×2732</b> · 竖屏</span>
+      <span>📲 iPad Pro 12.9″ · <b>2732×2048</b> · 横屏</span>
+      <span>组件尺寸：手机=平板（同 px，不缩放）</span>
+      <span>💡 已看卡片：opacity 0.1（10% 透明）</span>
+      <span>💡 ⤢ 缩放按钮（右下角）：点击 → 全屏查看图片</span>
+    </div>
+  </div>
+
+  <!-- ==================== 手机：iPhone 17 Pro Max 竖屏 ==================== -->
+  <section class="device-section">
+    <div class="device-label">
+      <span class="name">📱 iPhone 17 Pro Max · 竖屏</span>
+      <span class="res">1320 × 2868 px</span>
+      <span class="note">基准尺寸 · 首页 2 列 · 浏览 3 列 · 卡片底部导航</span>
+    </div>
+    <div class="screens-row">
+
+      <!-- 手机 · 首页 -->
+      <div class="frame phone">
+        <div class="screen phone">
+          <div class="statusbar"><span>9:41</span><span class="bat"></span></div>
+          <div class="content">
+            <div class="app-header"><div class="h-title">学习卡片</div><div class="h-sub">每天进步一点点</div></div>
+            <div class="section-title">学习板块</div>
+            <div class="home-grid cols-2">
+              <div class="board-card"><div class="bc-emoji">🦁</div><div class="bc-title">动物</div><div class="bc-en">Animals</div><div class="bc-tag">21 张</div></div>
+              <div class="board-card coming"><div class="bc-emoji">🍎</div><div class="bc-title">水果</div><div class="bc-en">Fruit</div><div class="bc-tag">即将推出</div></div>
+              <div class="board-card coming"><div class="bc-emoji">🚗</div><div class="bc-title">交通工具</div><div class="bc-en">Transportation</div><div class="bc-tag">即将推出</div></div>
+              <div class="board-card coming"><div class="bc-emoji">🌈</div><div class="bc-title">颜色形状</div><div class="bc-en">Colors & Shapes</div><div class="bc-tag">即将推出</div></div>
+              <div class="board-card coming"><div class="bc-emoji">🔢</div><div class="bc-title">数字</div><div class="bc-en">Numbers</div><div class="bc-tag">即将推出</div></div>
+              <div class="board-card coming"><div class="bc-emoji">👋</div><div class="bc-title">身体部位</div><div class="bc-en">Body Parts</div><div class="bc-tag">即将推出</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="tag">首页 · 板块列表</div>
+      </div>
+
+      <!-- 手机 · 浏览模式 -->
+      <div class="frame phone">
+        <div class="screen phone">
+          <div class="statusbar"><span>9:41</span><span class="bat"></span></div>
+          <div class="content">
+            <div class="mode-top">
+              <span class="badge">浏览模式</span>
+              <div class="links"><span class="link">📚 首页</span><span class="link accent">再来一次</span><span class="link">卡片模式</span></div>
+            </div>
+            <div class="browse-grid cols-3">
+              <div class="b-tile" style="background:#3c2d12"><div class="bt-emoji">🦁</div><div class="bt-name">狮子</div></div>
+              <div class="b-tile" style="background:#2d2d2d"><div class="bt-emoji">🐘</div><div class="bt-name">大象</div></div>
+              <div class="b-tile" style="background:#242424"><div class="bt-emoji">🐼</div><div class="bt-name">熊猫</div></div>
+              <div class="b-tile" style="background:#422a0c"><div class="bt-emoji">🐯</div><div class="bt-name">老虎</div></div>
+              <div class="b-tile" style="background:#3f3621"><div class="bt-emoji">🦒</div><div class="bt-name">长颈鹿</div></div>
+              <div class="b-tile" style="background:#2a2a2a"><div class="bt-emoji">🦓</div><div class="bt-name">斑马</div></div>
+              <div class="b-tile visited" style="background:#2a2a2a"><div class="bt-flag">✓</div><div class="bt-emoji">🐧</div><div class="bt-name">企鹅</div></div>
+              <div class="b-tile visited" style="background:#2d2118"><div class="bt-flag">✓</div><div class="bt-emoji">🐵</div><div class="bt-name">猴子</div></div>
+              <div class="b-tile" style="background:#423c3c"><div class="bt-emoji">🐰</div><div class="bt-name">兔子</div></div>
+              <div class="b-tile" style="background:#362d24"><div class="bt-emoji">🐱</div><div class="bt-name">猫</div></div>
+              <div class="b-tile" style="background:#302418"><div class="bt-emoji">🐶</div><div class="bt-name">狗</div></div>
+              <div class="b-tile" style="background:#23262b"><div class="bt-emoji">🐬</div><div class="bt-name">海豚</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="tag">浏览模式 · 方阵</div>
+      </div>
+
+      <!-- 手机 · 浏览模式卡片弹出 -->
+      <div class="frame phone">
+        <div class="screen phone">
+          <div class="statusbar"><span>9:41</span><span class="bat"></span></div>
+          <div class="content">
+            <div class="mode-top">
+              <span class="badge">浏览模式</span>
+              <div class="links"><span class="link">📚 首页</span><span class="link accent">再来一次</span><span class="link">卡片模式</span></div>
+            </div>
+            <div class="browse-grid cols-3" style="opacity:.4">
+              <div class="b-tile" style="background:#3c2d12"><div class="bt-emoji">🦁</div><div class="bt-name">狮子</div></div>
+              <div class="b-tile" style="background:#2d2d2d"><div class="bt-emoji">🐘</div><div class="bt-name">大象</div></div>
+              <div class="b-tile" style="background:#242424"><div class="bt-emoji">🐼</div><div class="bt-name">熊猫</div></div>
+              <div class="b-tile" style="background:#422a0c"><div class="bt-emoji">🐯</div><div class="bt-name">老虎</div></div>
+              <div class="b-tile" style="background:#3f3621"><div class="bt-emoji">🦒</div><div class="bt-name">长颈鹿</div></div>
+              <div class="b-tile" style="background:#2a2a2a"><div class="bt-emoji">🦓</div><div class="bt-name">斑马</div></div>
+            </div>
+            <div class="pop-mask">
+              <div class="pop-card">
+                <div class="pop-close">✕</div>
+                <div class="cards-stage flip-center">
+                  <div class="learn-card">
+                    <div class="lc-image"><div class="lc-zoom">⤢</div><div class="lc-emoji">🐱</div><div class="lc-ph">实拍照片 · 点 ⤢ 全屏查看</div></div>
+                    <!-- 备注：整条横幅 .lc-line 均可点击，播放对应中文名/英文名/说明文语音 -->
+                    <div class="lc-texts">
+                      <div class="lc-zhen">
+                        <div class="lc-cell lc-cell-zh"><div class="lc-zh">猫</div><div class="lc-sound">🔊</div></div>
+                        <div class="lc-cell lc-cell-en"><div class="lc-en">Cat</div><div class="lc-sound">🔊</div></div>
+                      </div>
+                      <div class="lc-line"><div class="lc-fact">猫是世界上最受欢迎的宠物之一，胡须能感知空气细微变化。</div><div class="lc-sound">🔊</div></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tag">浏览模式 · 卡片弹出</div>
+      </div>
+
+      <!-- 手机 · 卡片模式 -->
+      <div class="frame phone">
+        <div class="screen phone">
+          <div class="statusbar"><span>9:41</span><span class="bat"></span></div>
+          <div class="content cards-content">
+            <div class="mode-top">
+              <span class="badge">卡片模式</span>
+              <div class="links"><span class="link">📚 首页</span><span class="link">浏览模式</span></div>
+            </div>
+            <div class="fc-counter">第 1 / 20 张</div>
+            <div class="cards-stage flip-center">
+              <div class="learn-card">
+                <div class="lc-image"><div class="lc-zoom">⤢</div><div class="lc-emoji">🐱</div><div class="lc-ph">实拍照片 · 点 ⤢ 全屏查看</div></div>
+                <!-- 备注：整条横幅 .lc-line 均可点击，播放对应中文名/英文名/说明文语音 -->
+                <div class="lc-texts">
+                  <div class="lc-zhen">
+                    <div class="lc-cell lc-cell-zh"><div class="lc-zh">猫</div><div class="lc-sound">🔊</div></div>
+                    <div class="lc-cell lc-cell-en"><div class="lc-en">Cat</div><div class="lc-sound">🔊</div></div>
+                  </div>
+                  <div class="lc-line"><div class="lc-fact">猫是世界上最受欢迎的宠物之一，胡须能感知空气细微变化。</div><div class="lc-sound">🔊</div></div>
+                </div>
+              </div>
+              <div class="nav-stack">
+                <div class="nav-round ghost">‹</div>
+                <div class="nav-round accent">🎲</div>
+                <div class="nav-round">›</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tag">卡片模式 · 大图 · 发音</div>
+      </div>
+
+      <!-- 手机 · 统计 -->
+      <div class="frame phone">
+        <div class="screen phone">
+          <div class="statusbar"><span>9:41</span><span class="bat"></span></div>
+          <div class="content">
+            <div class="app-header"><div class="h-title">今日统计</div><div class="h-sub">每日 0:00 自动刷新</div></div>
+            <div class="stats-wrap center">
+              <div class="stat-row">
+                <div class="stat-tile"><div class="st-num">248</div><div class="st-label">总浏览次数</div></div>
+                <div class="stat-tile"><div class="st-num">36</div><div class="st-label">看过卡片种类</div></div>
+              </div>
+              <div class="top-list">
+                <div class="tl-title">浏览最多的卡片</div>
+                <div class="tl-item"><span class="tl-rank">1</span><span class="tl-name">猫 Cat</span><span class="tl-count">42 次</span></div>
+                <div class="tl-item"><span class="tl-rank">2</span><span class="tl-name">狗 Dog</span><span class="tl-count">31 次</span></div>
+                <div class="tl-item"><span class="tl-rank">3</span><span class="tl-name">狮子 Lion</span><span class="tl-count">28 次</span></div>
+                <div class="tl-item"><span class="tl-rank">4</span><span class="tl-name">熊猫 Panda</span><span class="tl-count">19 次</span></div>
+                <div class="tl-item"><span class="tl-rank">5</span><span class="tl-name">大象 Elephant</span><span class="tl-count">17 次</span></div>
+              </div>
+              <div class="btn-clear">清空今日统计</div>
+            </div>
+          </div>
+        </div>
+        <div class="tag">统计 · 每日快照</div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ==================== 平板：iPad Pro 12.9 竖屏 ==================== -->
+  <section class="device-section">
+    <div class="device-label">
+      <span class="name">📲 iPad Pro 12.9″ · 竖屏</span>
+      <span class="res">2048 × 2732 px</span>
+      <span class="note">组件尺寸=手机 · 首页 3 列 · 浏览 6 列 · 卡片侧边导航</span>
+    </div>
+    <div class="screens-row">
+
+      <!-- 平板竖屏 · 首页 -->
+      <div class="frame ipadp">
+        <div class="screen ipadp">
+          <div class="statusbar"><span>9:41</span><span class="bat"></span></div>
+          <div class="content">
+            <div class="app-header"><div class="h-title">学习卡片</div><div class="h-sub">每天进步一点点</div></div>
+            <div class="section-title">学习板块</div>
+            <div class="home-grid cols-3">
+              <div class="board-card"><div class="bc-emoji">🦁</div><div class="bc-title">动物</div><div class="bc-en">Animals</div><div class="bc-tag">21 张</div></div>
+              <div class="board-card coming"><div class="bc-emoji">🍎</div><div class="bc-title">水果</div><div class="bc-en">Fruit</div><div class="bc-tag">即将推出</div></div>
+              <div class="board-card coming"><div class="bc-emoji">🚗</div><div class="bc-title">交通工具</div><div class="bc-en">Transportation</div><div class="bc-tag">即将推出</div></div>
+              <div class="board-card coming"><div class="bc-emoji">🌈</div><div class="bc-title">颜色形状</div><div class="bc-en">Colors & Shapes</div><div class="bc-tag">即将推出</div></div>
+              <div class="board-card coming"><div class="bc-emoji">🔢</div><div class="bc-title">数字</div><div class="bc-en">Numbers</div><div class="bc-tag">即将推出</div></div>
+              <div class="board-card coming"><div class="bc-emoji">👋</div><div class="bc-title">身体部位</div><div class="bc-en">Body Parts</div><div class="bc-tag">即将推出</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="tag">首页 · 3 列网格</div>
+      </div>
+
+      <!-- 平板竖屏 · 浏览模式 -->
+      <div class="frame ipadp">
+        <div class="screen ipadp">
+          <div class="statusbar"><span>9:41</span><span class="bat"></span></div>
+          <div class="content">
+            <div class="mode-top">
+              <span class="badge">浏览模式</span>
+              <div class="links"><span class="link">📚 首页</span><span class="link accent">再来一次</span><span class="link">卡片模式</span></div>
+            </div>
+            <div class="browse-grid cols-6">
+              <div class="b-tile" style="background:#3c2d12"><div class="bt-emoji">🦁</div><div class="bt-name">狮子</div></div>
+              <div class="b-tile" style="background:#2d2d2d"><div class="bt-emoji">🐘</div><div class="bt-name">大象</div></div>
+              <div class="b-tile" style="background:#242424"><div class="bt-emoji">🐼</div><div class="bt-name">熊猫</div></div>
+              <div class="b-tile" style="background:#422a0c"><div class="bt-emoji">🐯</div><div class="bt-name">老虎</div></div>
+              <div class="b-tile" style="background:#3f3621"><div class="bt-emoji">🦒</div><div class="bt-name">长颈鹿</div></div>
+              <div class="b-tile" style="background:#2a2a2a"><div class="bt-emoji">🦓</div><div class="bt-name">斑马</div></div>
+              <div class="b-tile visited" style="background:#2a2a2a"><div class="bt-flag">✓</div><div class="bt-emoji">🐧</div><div class="bt-name">企鹅</div></div>
+              <div class="b-tile visited" style="background:#2d2118"><div class="bt-flag">✓</div><div class="bt-emoji">🐵</div><div class="bt-name">猴子</div></div>
+              <div class="b-tile" style="background:#423c3c"><div class="bt-emoji">🐰</div><div class="bt-name">兔子</div></div>
+              <div class="b-tile" style="background:#362d24"><div class="bt-emoji">🐱</div><div class="bt-name">猫</div></div>
+              <div class="b-tile" style="background:#302418"><div class="bt-emoji">🐶</div><div class="bt-name">狗</div></div>
+              <div class="b-tile" style="background:#23262b"><div class="bt-emoji">🐬</div><div class="bt-name">海豚</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="tag">浏览模式 · 6 列方阵</div>
+      </div>
+
+      <!-- 平板竖屏 · 浏览模式卡片弹出 -->
+      <div class="frame ipadp">
+        <div class="screen ipadp">
+          <div class="statusbar"><span>9:41</span><span class="bat"></span></div>
+          <div class="content">
+            <div class="mode-top">
+              <span class="badge">浏览模式</span>
+              <div class="links"><span class="link">📚 首页</span><span class="link accent">再来一次</span><span class="link">卡片模式</span></div>
+            </div>
+            <div class="browse-grid cols-6" style="opacity:.4">
+              <div class="b-tile" style="background:#3c2d12"><div class="bt-emoji">🦁</div><div class="bt-name">狮子</div></div>
+              <div class="b-tile" style="background:#2d2d2d"><div class="bt-emoji">🐘</div><div class="bt-name">大象</div></div>
+              <div class="b-tile" style="background:#242424"><div class="bt-emoji">🐼</div><div class="bt-name">熊猫</div></div>
+              <div class="b-tile" style="background:#422a0c"><div class="bt-emoji">🐯</div><div class="bt-name">老虎</div></div>
+              <div class="b-tile" style="background:#3f3621"><div class="bt-emoji">🦒</div><div class="bt-name">长颈鹿</div></div>
+              <div class="b-tile" style="background:#2a2a2a"><div class="bt-emoji">🦓</div><div class="bt-name">斑马</div></div>
+            </div>
+            <div class="pop-mask">
+              <div class="pop-card">
+                <div class="pop-close">✕</div>
+                <div class="pop-replica">
+                <div class="pop-spacer-mode"></div>
+                <div class="pop-spacer-counter"></div>
+                <div class="cards-stage flip-flank">
+                  <div class="learn-card">
+                    <div class="lc-image"><div class="lc-zoom">⤢</div><div class="lc-emoji">🐱</div><div class="lc-ph">实拍照片 · 点 ⤢ 全屏查看</div></div>
+                    <!-- 备注：整条横幅 .lc-line 均可点击，播放对应中文名/英文名/说明文语音 -->
+                    <div class="lc-texts">
+                      <div class="lc-zhen">
+                        <div class="lc-cell lc-cell-zh"><div class="lc-zh">猫</div><div class="lc-sound">🔊</div></div>
+                        <div class="lc-cell lc-cell-en"><div class="lc-en">Cat</div><div class="lc-sound">🔊</div></div>
+                      </div>
+                      <div class="lc-line"><div class="lc-fact">猫是世界上最受欢迎的宠物之一，胡须能感知空气细微变化。</div><div class="lc-sound">🔊</div></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        </div>
+        <div class="tag">浏览模式 · 卡片弹出</div>
+      </div>
+
+      <!-- 平板竖屏 · 卡片模式 -->
+      <div class="frame ipadp">
+        <div class="screen ipadp">
+          <div class="statusbar"><span>9:41</span><span class="bat"></span></div>
+          <div class="content cards-content">
+            <div class="mode-top">
+              <span class="badge">卡片模式</span>
+              <div class="links"><span class="link">📚 首页</span><span class="link">浏览模式</span></div>
+            </div>
+            <div class="fc-counter">第 1 / 20 张</div>
+            <div class="cards-stage flip-flank">
+              <div class="learn-card">
+                <div class="lc-image"><div class="lc-zoom">⤢</div><div class="lc-emoji">🐱</div><div class="lc-ph">实拍照片 · 点 ⤢ 全屏查看</div></div>
+                <!-- 备注：整条横幅 .lc-line 均可点击，播放对应中文名/英文名/说明文语音 -->
+                <div class="lc-texts">
+                  <div class="lc-zhen">
+                    <div class="lc-cell lc-cell-zh"><div class="lc-zh">猫</div><div class="lc-sound">🔊</div></div>
+                    <div class="lc-cell lc-cell-en"><div class="lc-en">Cat</div><div class="lc-sound">🔊</div></div>
+                  </div>
+                  <div class="lc-line"><div class="lc-fact">猫是世界上最受欢迎的宠物之一，胡须能感知空气细微变化。</div><div class="lc-sound">🔊</div></div>
+                </div>
+              </div>
+              <div class="nav-stack">
+                <div class="nav-round ghost">‹</div>
+                <div class="nav-round accent">🎲</div>
+                <div class="nav-round">›</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tag">卡片模式 · 侧边导航</div>
+      </div>
+
+      <!-- 平板竖屏 · 统计 -->
+      <div class="frame ipadp">
+        <div class="screen ipadp">
+          <div class="statusbar"><span>9:41</span><span class="bat"></span></div>
+          <div class="content">
+            <div class="app-header"><div class="h-title">今日统计</div><div class="h-sub">每日 0:00 自动刷新</div></div>
+            <div class="stats-wrap center">
+              <div class="stat-row">
+                <div class="stat-tile"><div class="st-num">248</div><div class="st-label">总浏览次数</div></div>
+                <div class="stat-tile"><div class="st-num">36</div><div class="st-label">看过卡片种类</div></div>
+              </div>
+              <div class="top-list">
+                <div class="tl-title">浏览最多的卡片</div>
+                <div class="tl-item"><span class="tl-rank">1</span><span class="tl-name">猫 Cat</span><span class="tl-count">42 次</span></div>
+                <div class="tl-item"><span class="tl-rank">2</span><span class="tl-name">狗 Dog</span><span class="tl-count">31 次</span></div>
+                <div class="tl-item"><span class="tl-rank">3</span><span class="tl-name">狮子 Lion</span><span class="tl-count">28 次</span></div>
+                <div class="tl-item"><span class="tl-rank">4</span><span class="tl-name">熊猫 Panda</span><span class="tl-count">19 次</span></div>
+                <div class="tl-item"><span class="tl-rank">5</span><span class="tl-name">大象 Elephant</span><span class="tl-count">17 次</span></div>
+              </div>
+              <div class="btn-clear">清空今日统计</div>
+            </div>
+          </div>
+        </div>
+        <div class="tag">统计 · 居中收拢</div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ==================== 平板：iPad Pro 12.9 横屏 ==================== -->
+  <section class="device-section">
+    <div class="device-label">
+      <span class="name">📲 iPad Pro 12.9″ · 横屏</span>
+      <span class="res">2732 × 2048 px</span>
+      <span class="note">组件尺寸=手机 · 首页 4 列 · 浏览 8 列 · 卡片左右箭头</span>
+    </div>
+    <div class="screens-row">
+
+      <!-- 平板横屏 · 首页 -->
+      <div class="frame ipadl">
+        <div class="screen ipadl">
+          <div class="statusbar"><span>9:41</span><span class="bat"></span></div>
+          <div class="content">
+            <div class="app-header"><div class="h-title">学习卡片</div><div class="h-sub">每天进步一点点</div></div>
+            <div class="section-title">学习板块</div>
+            <div class="home-grid cols-4">
+              <div class="board-card"><div class="bc-emoji">🦁</div><div class="bc-title">动物</div><div class="bc-en">Animals</div><div class="bc-tag">21 张</div></div>
+              <div class="board-card coming"><div class="bc-emoji">🍎</div><div class="bc-title">水果</div><div class="bc-en">Fruit</div><div class="bc-tag">即将推出</div></div>
+              <div class="board-card coming"><div class="bc-emoji">🚗</div><div class="bc-title">交通工具</div><div class="bc-en">Transportation</div><div class="bc-tag">即将推出</div></div>
+              <div class="board-card coming"><div class="bc-emoji">🌈</div><div class="bc-title">颜色形状</div><div class="bc-en">Colors & Shapes</div><div class="bc-tag">即将推出</div></div>
+              <div class="board-card coming"><div class="bc-emoji">🔢</div><div class="bc-title">数字</div><div class="bc-en">Numbers</div><div class="bc-tag">即将推出</div></div>
+              <div class="board-card coming"><div class="bc-emoji">👋</div><div class="bc-title">身体部位</div><div class="bc-en">Body Parts</div><div class="bc-tag">即将推出</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="tag">首页 · 4 列网格</div>
+      </div>
+
+      <!-- 平板横屏 · 浏览模式 -->
+      <div class="frame ipadl">
+        <div class="screen ipadl">
+          <div class="statusbar"><span>9:41</span><span class="bat"></span></div>
+          <div class="content">
+            <div class="mode-top">
+              <span class="badge">浏览模式</span>
+              <div class="links"><span class="link">📚 首页</span><span class="link accent">再来一次</span><span class="link">卡片模式</span></div>
+            </div>
+            <div class="browse-grid cols-8">
+              <div class="b-tile" style="background:#3c2d12"><div class="bt-emoji">🦁</div><div class="bt-name">狮子</div></div>
+              <div class="b-tile" style="background:#2d2d2d"><div class="bt-emoji">🐘</div><div class="bt-name">大象</div></div>
+              <div class="b-tile" style="background:#242424"><div class="bt-emoji">🐼</div><div class="bt-name">熊猫</div></div>
+              <div class="b-tile" style="background:#422a0c"><div class="bt-emoji">🐯</div><div class="bt-name">老虎</div></div>
+              <div class="b-tile" style="background:#3f3621"><div class="bt-emoji">🦒</div><div class="bt-name">长颈鹿</div></div>
+              <div class="b-tile" style="background:#2a2a2a"><div class="bt-emoji">🦓</div><div class="bt-name">斑马</div></div>
+              <div class="b-tile visited" style="background:#2a2a2a"><div class="bt-flag">✓</div><div class="bt-emoji">🐧</div><div class="bt-name">企鹅</div></div>
+              <div class="b-tile visited" style="background:#2d2118"><div class="bt-flag">✓</div><div class="bt-emoji">🐵</div><div class="bt-name">猴子</div></div>
+              <div class="b-tile" style="background:#423c3c"><div class="bt-emoji">🐰</div><div class="bt-name">兔子</div></div>
+              <div class="b-tile" style="background:#362d24"><div class="bt-emoji">🐱</div><div class="bt-name">猫</div></div>
+              <div class="b-tile" style="background:#302418"><div class="bt-emoji">🐶</div><div class="bt-name">狗</div></div>
+              <div class="b-tile" style="background:#23262b"><div class="bt-emoji">🐬</div><div class="bt-name">海豚</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="tag">浏览模式 · 8 列方阵</div>
+      </div>
+
+      <!-- 平板横屏 · 浏览模式卡片弹出 -->
+      <div class="frame ipadl">
+        <div class="screen ipadl">
+          <div class="statusbar"><span>9:41</span><span class="bat"></span></div>
+          <div class="content">
+            <div class="mode-top">
+              <span class="badge">浏览模式</span>
+              <div class="links"><span class="link">📚 首页</span><span class="link accent">再来一次</span><span class="link">卡片模式</span></div>
+            </div>
+            <div class="browse-grid cols-8" style="opacity:.4">
+              <div class="b-tile" style="background:#3c2d12"><div class="bt-emoji">🦁</div><div class="bt-name">狮子</div></div>
+              <div class="b-tile" style="background:#2d2d2d"><div class="bt-emoji">🐘</div><div class="bt-name">大象</div></div>
+              <div class="b-tile" style="background:#242424"><div class="bt-emoji">🐼</div><div class="bt-name">熊猫</div></div>
+              <div class="b-tile" style="background:#422a0c"><div class="bt-emoji">🐯</div><div class="bt-name">老虎</div></div>
+              <div class="b-tile" style="background:#3f3621"><div class="bt-emoji">🦒</div><div class="bt-name">长颈鹿</div></div>
+              <div class="b-tile" style="background:#2a2a2a"><div class="bt-emoji">🦓</div><div class="bt-name">斑马</div></div>
+              <div class="b-tile" style="background:#2a2a2a"><div class="bt-emoji">🐧</div><div class="bt-name">企鹅</div></div>
+              <div class="b-tile" style="background:#2d2118"><div class="bt-emoji">🐵</div><div class="bt-name">猴子</div></div>
+            </div>
+            <div class="pop-mask">
+              <div class="pop-card">
+                <div class="pop-close">✕</div>
+                <div class="pop-replica">
+                <div class="pop-spacer-mode"></div>
+                <div class="pop-spacer-counter"></div>
+                <div class="cards-stage flip-flank">
+                  <div class="learn-card">
+                    <div class="lc-image"><div class="lc-zoom">⤢</div><div class="lc-emoji">🐱</div><div class="lc-ph">实拍照片 · 点 ⤢ 全屏查看</div></div>
+                    <!-- 备注：整条横幅 .lc-line 均可点击，播放对应中文名/英文名/说明文语音 -->
+                    <div class="lc-texts">
+                      <div class="lc-zhen">
+                        <div class="lc-cell lc-cell-zh"><div class="lc-zh">猫</div><div class="lc-sound">🔊</div></div>
+                        <div class="lc-cell lc-cell-en"><div class="lc-en">Cat</div><div class="lc-sound">🔊</div></div>
+                      </div>
+                      <div class="lc-line"><div class="lc-fact">猫是世界上最受欢迎的宠物之一，胡须能感知空气细微变化。</div><div class="lc-sound">🔊</div></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        </div>
+        <div class="tag">浏览模式 · 卡片弹出</div>
+      </div>
+
+      <!-- 平板横屏 · 卡片模式 -->
+      <div class="frame ipadl">
+        <div class="screen ipadl">
+          <div class="statusbar"><span>9:41</span><span class="bat"></span></div>
+          <div class="content cards-content">
+            <div class="mode-top">
+              <span class="badge">卡片模式</span>
+              <div class="links"><span class="link">📚 首页</span><span class="link">浏览模式</span></div>
+            </div>
+            <div class="fc-counter">第 1 / 20 张</div>
+            <div class="cards-stage flip-flank">
+              <div class="learn-card">
+                <div class="lc-image"><div class="lc-zoom">⤢</div><div class="lc-emoji">🐱</div><div class="lc-ph">实拍照片 · 点 ⤢ 全屏查看</div></div>
+                <!-- 备注：整条横幅 .lc-line 均可点击，播放对应中文名/英文名/说明文语音 -->
+                <div class="lc-texts">
+                  <div class="lc-zhen">
+                    <div class="lc-cell lc-cell-zh"><div class="lc-zh">猫</div><div class="lc-sound">🔊</div></div>
+                    <div class="lc-cell lc-cell-en"><div class="lc-en">Cat</div><div class="lc-sound">🔊</div></div>
+                  </div>
+                  <div class="lc-line"><div class="lc-fact">猫是世界上最受欢迎的宠物之一，胡须能感知空气细微变化。</div><div class="lc-sound">🔊</div></div>
+                </div>
+              </div>
+              <div class="nav-stack">
+                <div class="nav-round ghost">‹</div>
+                <div class="nav-round accent">🎲</div>
+                <div class="nav-round">›</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tag">卡片模式 · 左右箭头</div>
+      </div>
+
+      <!-- 平板横屏 · 统计 -->
+      <div class="frame ipadl">
+        <div class="screen ipadl">
+          <div class="statusbar"><span>9:41</span><span class="bat"></span></div>
+          <div class="content">
+            <div class="app-header"><div class="h-title">今日统计</div><div class="h-sub">每日 0:00 自动刷新</div></div>
+            <div class="stats-wrap split">
+              <div class="col-left">
+                <div class="stat-row">
+                  <div class="stat-tile"><div class="st-num">248</div><div class="st-label">总浏览次数</div></div>
+                  <div class="stat-tile"><div class="st-num">36</div><div class="st-label">看过卡片种类</div></div>
+                </div>
+                <div class="btn-clear">清空今日统计</div>
+              </div>
+              <div class="col-right">
+                <div class="top-list">
+                  <div class="tl-title">浏览最多的卡片</div>
+                  <div class="tl-item"><span class="tl-rank">1</span><span class="tl-name">猫 Cat</span><span class="tl-count">42 次</span></div>
+                  <div class="tl-item"><span class="tl-rank">2</span><span class="tl-name">狗 Dog</span><span class="tl-count">31 次</span></div>
+                  <div class="tl-item"><span class="tl-rank">3</span><span class="tl-name">狮子 Lion</span><span class="tl-count">28 次</span></div>
+                  <div class="tl-item"><span class="tl-rank">4</span><span class="tl-name">熊猫 Panda</span><span class="tl-count">19 次</span></div>
+                  <div class="tl-item"><span class="tl-rank">5</span><span class="tl-name">大象 Elephant</span><span class="tl-count">17 次</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tag">统计 · 左右分栏</div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- 全屏查看图片浮层：点击任意 ⤢ 缩放按钮弹出，点击任意处关闭 -->
+  <div class="img-fs" id="imgFs">
+    <div class="fs-close">✕</div>
+    <div class="fs-emoji">🐱</div>
+    <div class="fs-tip">点击任意处关闭 · 全屏查看图片</div>
+  </div>
+
+  <script>
+    (function () {
+      var fs = document.getElementById('imgFs');
+      document.querySelectorAll('.lc-zoom').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var img = btn.closest('.lc-image');
+          var em = img && img.querySelector('.lc-emoji');
+          fs.querySelector('.fs-emoji').textContent = em ? em.textContent : '🖼️';
+          fs.classList.add('show');
+        });
+      });
+      fs.addEventListener('click', function () { fs.classList.remove('show'); });
+    })();
+  </script>
+
+</body>
+</html>

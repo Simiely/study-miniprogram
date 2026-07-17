@@ -1,0 +1,28 @@
+<view class="page-root {{isTablet ? 'tablet' : ''}}">
+  <view class="container">
+    <text class="date-tip">数据日期：{{date}}（每天 0 点刷新一次）</text>
+
+    <view class="summary">
+      <view class="summary-card">
+        <text class="summary-num">{{totalViews}}</text>
+        <text class="summary-label">累计观看次数</text>
+      </view>
+      <view class="summary-card">
+        <text class="summary-num">{{distinctCards}}</text>
+        <text class="summary-label">看过卡片种类</text>
+      </view>
+    </view>
+
+    <text class="list-title">各卡片观看排行</text>
+    <view wx:if="{{list.length}}" class="rank-list">
+      <view class="rank-item" wx:for="{{list}}" wx:key="id">
+        <text class="rank-no">{{index + 1}}</text>
+        <text class="rank-title">{{item.title}}</text>
+        <text class="rank-count">{{item.count}} 次</text>
+      </view>
+    </view>
+    <view wx:else class="empty">还没有看卡记录</view>
+
+    <button class="clear-btn" bindtap="onClear">清空统计</button>
+  </view>
+</view>

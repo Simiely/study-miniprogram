@@ -1,0 +1,158 @@
+/* pages/cards/cards.wxss - 翻面学习卡（word-cards 暖色风）
+   手机：卡片竖向填满 + 底部导航；平板(.tablet)：卡片保持手机宽度居中，
+   导航按钮移到卡片两侧（利用横向空间），不放大卡片本身 */
+
+.container {
+  padding: 24rpx;
+  min-height: 100vh;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---- 顶栏 ---- */
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24rpx;
+}
+.link-back, .link-stats {
+  background: var(--card-bg);
+  color: var(--primary);
+  border: 4rpx solid var(--line);
+  font-size: 28rpx;
+  padding: 14rpx 28rpx;
+  box-shadow: var(--shadow-soft);
+}
+.link-back:active, .link-stats:active { border-color: var(--primary); transform: scale(0.96); }
+.progress { font-size: 28rpx; color: var(--text-weak); }
+
+/* ---- 卡片区 ---- */
+.card-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.card {
+  flex: 1;
+  min-height: 0;
+  perspective: 1600rpx;
+}
+.card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  transform-style: preserve-3d;
+}
+.card.flipped .card-inner { transform: rotateY(180deg); }
+
+.card-face {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: var(--radius-card);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 56rpx;
+  box-sizing: border-box;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+.card-front { background: var(--card-bg); box-shadow: var(--shadow-card); }
+.card-back {
+  background: var(--primary);
+  color: #fff;
+  transform: rotateY(180deg);
+  box-shadow: var(--shadow-card);
+}
+
+.card-label {
+  font-size: 26rpx;
+  letter-spacing: 4rpx;
+  opacity: 0.55;
+  margin-bottom: 28rpx;
+}
+.card-back .card-label { opacity: 0.8; }
+.card-text {
+  font-size: 48rpx;
+  font-weight: 600;
+  text-align: center;
+  line-height: 1.5;
+}
+.card-hint {
+  font-size: 24rpx;
+  opacity: 0.5;
+  margin-top: 48rpx;
+}
+.card-back .card-hint { opacity: 0.85; }
+
+/* ---- 导航 ---- */
+.nav {
+  display: flex;
+  gap: 24rpx;
+  margin-top: 28rpx;
+}
+.nav-btn {
+  flex: 1;
+  background: var(--card-bg);
+  color: var(--primary);
+  border: 4rpx solid var(--line);
+  border-radius: 999rpx;
+  font-size: 30rpx;
+  font-weight: 600;
+  padding: 22rpx 0;
+  box-shadow: var(--shadow-soft);
+  line-height: 1.3;
+}
+.nav-btn.primary { background: var(--primary); color: #fff; border-color: var(--primary); }
+.nav-btn:active { transform: scale(0.97); }
+
+.loading, .empty {
+  text-align: center;
+  color: var(--text-weak);
+  font-size: 28rpx;
+  margin-top: 160rpx;
+}
+
+/* ============================================================
+   平板布局（iPad / 大屏）：.tablet 命中
+   卡片保持手机宽度（约 400px）居中，导航移到卡片右侧竖排，
+   用 px 写样式，组件尺寸不放大，只重排位置。
+   ============================================================ */
+.tablet .container { padding: 32px 40px 48px; }
+.tablet .topbar { max-width: 920px; margin: 0 auto 32px; }
+.tablet .link-back, .tablet .link-stats { font-size: 28px; padding: 14px 30px; border-width: 2px; }
+.tablet .progress { font-size: 28px; }
+
+.tablet .card-area {
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 64px;
+}
+.tablet .card {
+  width: 400px;          /* 约等于手机宽度，不放大 */
+  flex: none;
+  height: 72vh;
+}
+.tablet .card-face { padding: 56px; border-radius: 24px; }
+.tablet .card-label { font-size: 26px; letter-spacing: 4px; margin-bottom: 28px; }
+.tablet .card-text { font-size: 48px; }
+.tablet .card-hint { font-size: 24px; margin-top: 48px; }
+
+.tablet .nav {
+  flex-direction: column;
+  margin-top: 0;
+  gap: 24px;
+}
+.tablet .nav-btn {
+  width: 132px;
+  font-size: 28px;
+  padding: 26px 0;
+  border-width: 2px;
+}
