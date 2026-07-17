@@ -100,7 +100,7 @@
 .tablet .fc-counter { font-size: 14px; margin-bottom: 9px; font-weight: 600; text-align: center; color: var(--text-weak); }
 
 /* flip-flank 布局：图片铺满全宽，发音条浮动在底部 */
-.tablet .cards-stage.flip-flank { gap: 0; align-items: stretch; justify-content: center; }
+.tablet .cards-stage.flip-flank { position: relative; gap: 0; align-items: stretch; justify-content: center; }
 .tablet .cards-stage.flip-flank .learn-card { width: 100%; height: 100%; padding: 0; background: transparent; box-shadow: none; position: relative; }
 .tablet .cards-stage.flip-flank .lc-image { flex: 1; min-height: 0; margin: 0 0 160px 0; border-radius: 16px; background: linear-gradient(140deg,#eef3e4 0%,#dce7cf 100%); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
 .tablet .cards-stage.flip-flank .lc-image .lc-emoji { font-size: 173px; line-height: 1; }
