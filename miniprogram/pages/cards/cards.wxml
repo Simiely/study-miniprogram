@@ -1,102 +1,81 @@
 <view class="page-root {{isTablet ? 'tablet' : ''}}">
-  <view class="content {{isTablet ? 'cards-content' : ''}}">
 
-    <!-- ========== 顶部导航栏 ========== -->
-    <view class="mode-top">
-      <text class="badge">{{mode === 'browse' ? '浏览模式' : '卡片模式'}}</text>
-      <view class="links">
-        <text class="link" bindtap="goBoards">📚 首页</text>
-        <text wx:if="{{mode === 'browse'}}" class="link accent" bindtap="switchMode" data-mode="card">卡片模式</text>
-        <text wx:if="{{mode === 'card'}}" class="link" bindtap="switchMode" data-mode="browse">浏览模式</text>
-      </view>
-    </view>
-
-    <view wx:if="{{loading}}" class="loading">加载中…</view>
-    <view wx:elif="{{cards.length === 0}}" class="empty">该板块暂无卡片</view>
-
-    <!-- ========== 浏览模式：方阵网格 ========== -->
-    <view wx:elif="{{mode === 'browse'}}" class="browse-grid {{isTablet ? 'cols-6' : 'cols-3'}}">
-      <view class="b-tile {{visited[item.id] ? 'visited' : ''}}"
-            wx:for="{{cards}}" wx:key="id"
-            data-id="{{item.id}}" data-title="{{item.title}}"
-            bindtap="onTapTile" style="background:{{item.color || '#3c2d12'}}">
-        <view class="bt-flag" wx:if="{{visited[item.id]}}">✓</view>
-        <view class="bt-emoji">{{item.emoji}}</view>
-        <view class="bt-name">{{item.zh}}</view>
-      </view>
-    </view>
-
-    <!-- ========== 卡片模式：手机 flip-center / iPad flip-flank ========== -->
-    <view wx:elif="{{mode === 'card'}}">
-      <!-- 计数器（手机显示、iPad 隐藏 — iPad 用 pop-replica 结构保持顶部padding） -->
-      <view class="fc-counter" wx:if="{{!isTablet}}">{{progress}}</view>
-
-      <view class="cards-stage {{isTablet ? 'flip-flank' : 'flip-center'}}">
-        <view class="learn-card">
-          <view class="lc-image">
-            <view class="lc-zoom">⤢</view>
-            <view class="lc-emoji">{{cards[index].emoji}}</view>
-            <view class="lc-ph">实拍照片 · 点 ⤢ 全屏查看</view>
-          </view>
-          <view class="lc-texts">
-            <view class="lc-zhen">
-              <view class="lc-cell lc-cell-zh" bindtap="playSound" data-type="zh">
-                <view class="lc-zh">{{cards[index].zh}}</view>
-                <view class="lc-sound">🔊</view>
-              </view>
-              <view class="lc-cell lc-cell-en" bindtap="playSound" data-type="en">
-                <view class="lc-en">{{cards[index].en}}</view>
-                <view class="lc-sound">🔊</view>
-              </view>
-            </view>
-            <view class="lc-line" bindtap="playSound" data-type="fact">
-              <view class="lc-fact">{{cards[index].fact}}</view>
-              <view class="lc-sound">🔊</view>
-            </view>
-          </view>
-        </view>
-        <!-- 导航按钮：手机 105px / iPad 105px（50%透明） -->
-        <view class="nav-stack">
-          <view class="nav-round ghost" bindtap="prev">‹</view>
-          <view class="nav-round accent" bindtap="random">🎲</view>
-          <view class="nav-round" bindtap="next">›</view>
+  <!-- ============================================================
+       手机端（isTablet = false）
+       ============================================================ -->
+  <block wx:if="{{!isTablet}}">
+    <view class="content">
+      <!-- 顶栏 -->
+      <view class="mode-top">
+        <text class="badge">{{mode === 'browse' ? '浏览模式' : '卡片模式'}}</text>
+        <view class="links">
+          <text class="link" bindtap="goBoards">📚 首页</text>
+          <text wx:if="{{mode === 'browse'}}" class="link accent" bindtap="switchMode" data-mode="card">卡片模式</text>
+          <text wx:if="{{mode === 'card'}}" class="link" bindtap="switchMode" data-mode="browse">浏览模式</text>
         </view>
       </view>
-    </view>
 
-    <!-- ========== 弹出层（浏览模式点卡片） ========== -->
-    <view wx:if="{{popup && popupCard}}" class="pop-mask">
-      <view class="pop-card">
-        <view class="pop-close" bindtap="closePopup">✕</view>
-        <view wx:if="{{isTablet}}" class="pop-replica">
-          <view class="pop-spacer-mode"></view>
-          <view class="pop-spacer-counter"></view>
-          <view class="cards-stage flip-flank">
+      <view wx:if="{{loading}}" class="loading">加载中…</view>
+      <view wx:elif="{{cards.length === 0}}" class="empty">该板块暂&#x65E0;卡片</view>
+
+      <!-- ===== 浏览模式：3 列方阵 ===== -->
+      <block wx:elif="{{mode === 'browse'}}">
+        <view class="browse-grid cols-3">
+          <view class="b-tile {{visited[item.id] ? 'visited' : ''}}"
+                wx:for="{{cards}}" wx:key="id"
+                data-id="{{item.id}}"
+                bindtap="onTapTile"
+                style="background:{{item.color || '#3c2d12'}}">
+            <view class="bt-flag" wx:if="{{visited[item.id]}}">✓</view>
+            <view class="bt-emoji">{{item.emoji}}</view>
+            <view class="bt-name">{{item.zh}}</view>
+          </view>
+        </view>
+      </block>
+
+      <!-- ===== 卡片模式（手机 flip-center） ===== -->
+      <block wx:elif="{{mode === 'card'}}">
+        <view class="cards-content-phone">
+          <view class="fc-counter">{{progress}}</view>
+          <view class="cards-stage flip-center">
             <view class="learn-card">
               <view class="lc-image">
-                <view class="lc-emoji">{{popupCard.emoji}}</view>
-                <view class="lc-ph">点击关闭</view>
+                <view class="lc-zoom">⤢</view>
+                <view class="lc-emoji">{{cards[index].emoji}}</view>
+                <view class="lc-ph">实拍照片 · 点 ⤢ 全屏查看</view>
               </view>
               <view class="lc-texts">
                 <view class="lc-zhen">
-                  <view class="lc-cell lc-cell-zh" bindtap="playSoundPopup" data-type="zh">
-                    <view class="lc-zh">{{popupCard.zh}}</view>
+                  <view class="lc-cell lc-cell-zh" bindtap="playSound" data-type="zh">
+                    <view class="lc-zh">{{cards[index].zh}}</view>
                     <view class="lc-sound">🔊</view>
                   </view>
-                  <view class="lc-cell lc-cell-en" bindtap="playSoundPopup" data-type="en">
-                    <view class="lc-en">{{popupCard.en}}</view>
+                  <view class="lc-cell lc-cell-en" bindtap="playSound" data-type="en">
+                    <view class="lc-en">{{cards[index].en}}</view>
                     <view class="lc-sound">🔊</view>
                   </view>
                 </view>
-                <view class="lc-line" bindtap="playSoundPopup" data-type="fact">
-                  <view class="lc-fact">{{popupCard.fact}}</view>
+                <view class="lc-line" bindtap="playSound" data-type="fact">
+                  <view class="lc-fact">{{cards[index].fact}}</view>
                   <view class="lc-sound">🔊</view>
                 </view>
               </view>
             </view>
+            <view class="nav-stack">
+              <view class="nav-round ghost" bindtap="prev">‹</view>
+              <view class="nav-round accent" bindtap="random">🎲</view>
+              <view class="nav-round" bindtap="next">›</view>
+            </view>
           </view>
         </view>
-        <view wx:else class="cards-stage flip-center">
+      </block>
+    </view>
+
+    <!-- 手机弹出层（浏览模式） -->
+    <view wx:if="{{popup && popupCard}}" class="pop-mask phone-mask">
+      <view class="pop-card">
+        <view class="pop-close" bindtap="closePopup">✕</view>
+        <view class="cards-stage flip-center">
           <view class="learn-card">
             <view class="lc-image">
               <view class="lc-zoom">⤢</view>
@@ -123,6 +102,114 @@
         </view>
       </view>
     </view>
+  </block>
 
-  </view>
+  <!-- ============================================================
+       iPad 端（isTablet = true）
+       ============================================================ -->
+  <block wx:else>
+    <view class="content tablet-content">
+      <!-- 顶栏 -->
+      <view class="mode-top">
+        <text class="badge">{{mode === 'browse' ? '浏览模式' : '卡片模式'}}</text>
+        <view class="links">
+          <text class="link" bindtap="goBoards">📚 首页</text>
+          <text wx:if="{{mode === 'browse'}}" class="link accent" bindtap="switchMode" data-mode="card">卡片模式</text>
+          <text wx:if="{{mode === 'card'}}" class="link" bindtap="switchMode" data-mode="browse">浏览模式</text>
+        </view>
+      </view>
+
+      <view wx:if="{{loading}}" class="loading">加载中…</view>
+      <view wx:elif="{{cards.length === 0}}" class="empty">该板块暂&#x65E0;卡片</view>
+
+      <!-- ===== 浏览模式：6 列方阵（竖屏）/ 8 列（横屏） ===== -->
+      <block wx:elif="{{mode === 'browse'}}">
+        <view class="browse-grid {{isLandscape ? 'cols-8' : 'cols-6'}}">
+          <view class="b-tile {{visited[item.id] ? 'visited' : ''}}"
+                wx:for="{{cards}}" wx:key="id"
+                data-id="{{item.id}}"
+                bindtap="onTapTile"
+                style="background:{{item.color || '#3c2d12'}}">
+            <view class="bt-flag" wx:if="{{visited[item.id]}}">✓</view>
+            <view class="bt-emoji">{{item.emoji}}</view>
+            <view class="bt-name">{{item.zh}}</view>
+          </view>
+        </view>
+      </block>
+
+      <!-- ===== 卡片模式（iPad flip-flank — 全屏图 + 底部浮动发音条） ===== -->
+      <block wx:elif="{{mode === 'card'}}">
+        <view class="cards-content-tablet">
+          <view class="fc-counter">{{progress}}</view>
+          <view class="cards-stage flip-flank">
+            <view class="learn-card">
+              <view class="lc-image">
+                <view class="lc-zoom">⤢</view>
+                <view class="lc-emoji">{{cards[index].emoji}}</view>
+                <view class="lc-ph">实拍照片 · 点 ⤢ 全屏查看</view>
+              </view>
+              <view class="lc-texts">
+                <view class="lc-zhen">
+                  <view class="lc-cell lc-cell-zh" bindtap="playSound" data-type="zh">
+                    <view class="lc-zh">{{cards[index].zh}}</view>
+                    <view class="lc-sound">🔊</view>
+                  </view>
+                  <view class="lc-cell lc-cell-en" bindtap="playSound" data-type="en">
+                    <view class="lc-en">{{cards[index].en}}</view>
+                    <view class="lc-sound">🔊</view>
+                  </view>
+                </view>
+                <view class="lc-line" bindtap="playSound" data-type="fact">
+                  <view class="lc-fact">{{cards[index].fact}}</view>
+                  <view class="lc-sound">🔊</view>
+                </view>
+              </view>
+            </view>
+            <view class="nav-stack">
+              <view class="nav-round ghost" bindtap="prev">‹</view>
+              <view class="nav-round accent" bindtap="random">🎲</view>
+              <view class="nav-round" bindtap="next">›</view>
+            </view>
+          </view>
+        </view>
+      </block>
+    </view>
+
+    <!-- iPad 弹出层（浏览模式 — 带 pop-replica 占位结构） -->
+    <view wx:if="{{popup && popupCard}}" class="pop-mask tablet-mask">
+      <view class="pop-card">
+        <view class="pop-close" bindtap="closePopup">✕</view>
+        <view class="pop-replica">
+          <view class="pop-spacer-mode"></view>
+          <view class="pop-spacer-counter"></view>
+          <view class="cards-stage flip-flank">
+            <view class="learn-card">
+              <view class="lc-image">
+                <view class="lc-zoom">⤢</view>
+                <view class="lc-emoji">{{popupCard.emoji}}</view>
+                <view class="lc-ph">点击关闭</view>
+              </view>
+              <view class="lc-texts">
+                <view class="lc-zhen">
+                  <view class="lc-cell lc-cell-zh" bindtap="playSoundPopup" data-type="zh">
+                    <view class="lc-zh">{{popupCard.zh}}</view>
+                    <view class="lc-sound">🔊</view>
+                  </view>
+                  <view class="lc-cell lc-cell-en" bindtap="playSoundPopup" data-type="en">
+                    <view class="lc-en">{{popupCard.en}}</view>
+                    <view class="lc-sound">🔊</view>
+                  </view>
+                </view>
+                <view class="lc-line" bindtap="playSoundPopup" data-type="fact">
+                  <view class="lc-fact">{{popupCard.fact}}</view>
+                  <view class="lc-sound">🔊</view>
+                </view>
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </block>
+
 </view>

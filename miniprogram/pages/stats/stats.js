@@ -1,13 +1,14 @@
 const { getDailySnapshot, clearStats } = require('../../utils/stats');
-const { isTablet } = require('../../utils/device');
+const { isTablet, isLandscape } = require('../../utils/device');
 
 Page({
   data: {
-    date: '', totalViews: 0, distinctCards: 0, list: [], isTablet: false,
+    date: '', totalViews: 0, distinctCards: 0, list: [],
+    isTablet: false, isLandscape: false,
   },
 
   onShow() {
-    this.setData({ isTablet: isTablet() });
+    this.setData({ isTablet: isTablet(), isLandscape: isLandscape() });
     this.refresh();
   },
 

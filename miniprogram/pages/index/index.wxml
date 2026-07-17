@@ -13,7 +13,9 @@
     <view wx:if="{{loading}}" class="loading">加载中…</view>
     <view wx:elif="{{boards.length === 0}}" class="empty">暂无板块</view>
 
-    <view wx:else class="home-grid {{isTablet ? 'cols-3' : 'cols-2'}}">
+    <!-- cols-2（手机）/ cols-3（iPad 竖屏）/ cols-4（iPad 横屏） -->
+    <view wx:else class="home-grid
+      {{isTablet ? (isLandscape ? 'cols-4' : 'cols-3') : 'cols-2'}}">
       <view class="board-card {{item.status === 'coming' ? 'coming' : ''}}"
             wx:for="{{boards}}" wx:key="id"
             data-id="{{item.id}}"

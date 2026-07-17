@@ -1,6 +1,6 @@
 const { getCards } = require('../../utils/cloud-data');
 const { recordCardView } = require('../../utils/stats');
-const { isTablet } = require('../../utils/device');
+const { isTablet, isLandscape } = require('../../utils/device');
 
 Page({
   data: {
@@ -9,17 +9,18 @@ Page({
     index: 0,
     loading: true,
     isTablet: false,
-    // 浏览模式 / 卡片模式切换
-    mode: 'browse',  // 'browse' | 'card'
-    // 弹出层
+    isLandscape: false,
+    /* 浏览模式 / 卡片模式 */
+    mode: 'browse',
+    /* 弹出层 */
     popup: false,
     popupCard: null,
-    // 已看过卡片 ID 集合
+    /* 已看过卡片集合 */
     visited: {},
   },
 
   onLoad(options) {
-    this.setData({ isTablet: isTablet() });
+    this.setData({ isTablet: isTablet(), isLandscape: isLandscape() });
     const boardId = options.boardId;
     const title = decodeURIComponent(options.title || '');
     wx.setNavigationBarTitle({ title: title || '卡片' });
@@ -41,19 +42,14 @@ Page({
   /* ---- 模式切换 ---- */
   switchMode(e) {
     const mode = e.currentTarget.dataset.mode;
-    if (mode === 'card') {
-      this.setData({ mode: 'card', popup: false });
-    } else {
-      this.setData({ mode: 'browse', popup: false });
-    }
+    this.setData({ mode: mode, popup: false });
   },
 
-  /* ---- 浏览模式 ---- */
+  /* ---- 浏览模式：点方格弹出详情 ---- */
   onTapTile(e) {
     const id = e.currentTarget.dataset.id;
     const card = this.data.cards.find(c => c.id === id);
     if (!card) return;
-    // 标记为已看
     const visited = { ...this.data.visited, [id]: true };
     recordCardView(card.id, card.zh || card.front);
     this.setData({ popup: true, popupCard: card, visited });
@@ -63,7 +59,7 @@ Page({
     this.setData({ popup: false, popupCard: null });
   },
 
-  /* ---- 卡片模式 ---- */
+  /* ---- 卡片模式：翻页 / 随机 ---- */
   next() {
     const n = this.data.cards.length;
     if (!n) return;
@@ -79,7 +75,6 @@ Page({
     if (!n) return;
     let i = this.data.index - 1;
     if (i < 0) i = n - 1;
-    const card = this.data.cards[i];
     this.setData({ index: i, progress: `${i + 1} / ${n}` });
   },
 
@@ -98,7 +93,6 @@ Page({
     const card = this.data.cards[this.data.index];
     if (!card) return;
     const text = card[type] || '';
-    // 预留：接入 TTS 或播放音频 URL
     console.log('播放发音:', type, text);
     wx.showToast({ title: `🔊 ${text}`, icon: 'none', duration: 1500 });
   },
@@ -112,6 +106,7 @@ Page({
     wx.showToast({ title: `🔊 ${text}`, icon: 'none', duration: 1500 });
   },
 
+  /* ---- 页面跳转 ---- */
   goStats() { wx.navigateTo({ url: '/pages/stats/stats' }); },
   goBoards() { wx.navigateBack({ delta: 1 }); },
 });

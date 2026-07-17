@@ -1,4 +1,11 @@
-/* pages/stats/stats.wxss — 严格按 mockup CSS */
+/* ============================================================
+   pages/stats/stats.wxss
+   ============================================================ */
+
+/* ============================================================
+   📱 手机端 — mockup px × 0.568 = rpx
+   ============================================================ */
+
 .content { padding: 25rpx 34rpx 51rpx; min-height: 100vh; box-sizing: border-box; }
 
 .app-header { margin-bottom: 23rpx; }
@@ -8,7 +15,7 @@
 .stats-wrap.center { max-width: 640rpx; margin: 0 auto; }
 
 .stat-row { display: grid; grid-template-columns: 1fr 1fr; gap: 23rpx; margin-bottom: 27rpx; }
-.stat-tile { background: var(--card-bg); border-radius: 32rpx; padding: 32rpx; box-shadow: 0 6rpx 16rpx rgba(60,60,60,.10); text-align: center; }
+.stat-tile { background: var(--card-bg); border-radius: 32rpx; padding: 32rpx; box-shadow: 0 6rpx 16rpx rgba(60,60,60,.10); }
 .stat-tile .st-num { font-size: 59rpx; font-weight: 700; color: var(--primary); line-height: 1; }
 .stat-tile .st-label { font-size: 23rpx; color: var(--text-weak); margin-top: 10rpx; }
 
@@ -22,15 +29,31 @@
 
 .btn-clear { margin-top: 32rpx; background: #d97777; color: #fff; font-size: 27rpx; font-weight: 600; text-align: center; padding: 23rpx; border-radius: 999rpx; }
 
-/* ---- 平板 ---- */
-.tablet .content { max-width: 860px; margin: 0 auto; padding: 44px 60px 90px; }
+/* ============================================================
+   📲 iPad .tablet — 独立 px 样式，直接使用 mockup 值
+   ============================================================ */
+.tablet .content { padding: 44px 60px 90px; min-height: 100vh; box-sizing: border-box; }
+
+.tablet .app-header { margin-bottom: 40px; }
 .tablet .h-title { font-size: 84px; }
-.tablet .h-sub { font-size: 40px; }
+.tablet .h-sub { font-size: 40px; margin-top: 14px; }
+
+/* 竖屏：居中收拢 */
+.tablet .stats-wrap.center { max-width: 860px; margin: 0 auto; }
+.tablet .stat-row { gap: 40px; margin-bottom: 48px; }
 .tablet .stat-tile { border-radius: 56px; padding: 56px; }
 .tablet .stat-tile .st-num { font-size: 104px; }
-.tablet .stat-tile .st-label { font-size: 40px; }
+.tablet .stat-tile .st-label { font-size: 40px; margin-top: 18px; }
 .tablet .top-list { border-radius: 56px; padding: 44px 56px; }
-.tablet .tl-title { font-size: 48px; }
+.tablet .top-list .tl-title { font-size: 48px; margin-bottom: 24px; }
+.tablet .tl-item { gap: 28px; padding: 30px 0; border-bottom: 2px solid #f0ece4; }
+.tablet .tl-rank { width: 64px; height: 64px; font-size: 38px; }
 .tablet .tl-name { font-size: 50px; }
 .tablet .tl-count { font-size: 42px; }
-.tablet .btn-clear { font-size: 48px; padding: 40px; }
+.tablet .btn-clear { margin-top: 56px; font-size: 48px; padding: 40px; }
+
+/* 横屏：左右分栏 */
+.tablet .stats-wrap.split { display: flex; gap: 64px; align-items: flex-start; }
+.tablet .stats-wrap.split .col-left { flex: 0 0 980px; }
+.tablet .stats-wrap.split .col-right { flex: 1; }
+.tablet .stats-wrap.split .btn-clear { margin-top: 40px; }

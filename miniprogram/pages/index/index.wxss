@@ -1,6 +1,10 @@
-/* pages/index/index.wxss — 严格按 mockup CSS 转换
-   mockup px × 0.568 = rpx（1320px 设计稿 → 750rpx）
-   平板 .tablet 用 px，值与 mockup 一致 */
+/* ============================================================
+   pages/index/index.wxss
+   ============================================================ */
+
+/* ============================================================
+   📱 手机端 — mockup px × 0.568 = rpx
+   ============================================================ */
 
 .content { padding: 25rpx 34rpx 51rpx; min-height: 100vh; box-sizing: border-box; }
 
@@ -14,7 +18,6 @@
 /* 板块网格 */
 .home-grid { display: grid; gap: 27rpx; }
 .home-grid.cols-2 { grid-template-columns: 1fr 1fr; gap: 25rpx; }
-.home-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; gap: 23rpx; }
 
 .board-card { background: var(--card-bg); border-radius: 41rpx; padding: 32rpx 28rpx; box-shadow: 0 6rpx 16rpx rgba(60,60,60,.10); position: relative; overflow: hidden; }
 .board-card:active { transform: scale(0.97); }
@@ -28,15 +31,24 @@
 
 .loading, .empty { text-align: center; color: var(--text-weak); font-size: 16rpx; margin-top: 120rpx; }
 
-/* ========== 平板 .tablet ========== */
+/* ============================================================
+   📲 iPad .tablet — 独立 px 样式，直接复制 mockup 值
+   ============================================================ */
 .tablet .content { max-width: 1100px; margin: 0 auto; padding: 44px 60px 90px; }
+
+.tablet .app-header { margin-bottom: 40px; }
 .tablet .h-title { font-size: 84px; }
-.tablet .h-sub { font-size: 40px; }
+.tablet .h-sub { font-size: 40px; margin-top: 14px; }
+
 .tablet .section-title { font-size: 58px; margin: 8px 0 40px; gap: 20px; }
 .tablet .section-title::before { width: 16px; height: 58px; border-radius: 8px; }
+
 .tablet .home-grid { gap: 40px; }
-.tablet .board-card { padding: 56px 40px; border-radius: 72px; }
+.tablet .home-grid.cols-3 { grid-template-columns: repeat(3, 1fr); gap: 40px; }
+.tablet .home-grid.cols-4 { grid-template-columns: repeat(4, 1fr); gap: 36px; }
+
+.tablet .board-card { border-radius: 72px; padding: 56px 40px; box-shadow: 0 10px 28px rgba(60,60,60,.10); }
 .tablet .bc-emoji { font-size: 118px; }
 .tablet .bc-title { font-size: 64px; margin-top: 28px; }
 .tablet .bc-en { font-size: 40px; margin-top: 12px; }
-.tablet .bc-tag { font-size: 34px; padding: 16px 34px; }
+.tablet .bc-tag { font-size: 34px; padding: 16px 34px; margin-top: 30px; }
