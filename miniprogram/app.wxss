@@ -4,6 +4,7 @@
    手机端用 rpx 自适应；平板端由页面根节点挂 .tablet 类，样式用 px 重写（见各页 wxss） */
 
 page {
+  height: 100%;
   /* 设计令牌 */
   --bg: #f5f0e8;
   --card-bg: #ffffff;
