@@ -1,59 +1,42 @@
-/* pages/index/index.wxss
-   首页：板块列表（mockup 样式）
-   手机 2 列 / 平板 3 列 */
+/* pages/index/index.wxss — 严格按 mockup CSS 转换
+   mockup px × 0.568 = rpx（1320px 设计稿 → 750rpx）
+   平板 .tablet 用 px，值与 mockup 一致 */
 
-.content { padding: 44rpx 48rpx 90rpx; min-height: 100vh; box-sizing: border-box; }
+.content { padding: 25rpx 34rpx 51rpx; min-height: 100vh; box-sizing: border-box; }
 
-.app-header { margin-bottom: 40rpx; }
-.h-title { font-size: 84rpx; font-weight: 700; color: var(--text); }
-.h-sub { font-size: 40rpx; color: var(--text-weak); margin-top: 14rpx; }
+.app-header { margin-bottom: 23rpx; }
+.h-title { font-size: 48rpx; font-weight: 700; color: var(--text); }
+.h-sub { font-size: 23rpx; color: var(--text-weak); margin-top: 8rpx; }
 
-.section-title {
-  font-size: 58rpx; font-weight: 700; margin: 8rpx 0 40rpx;
-  display: flex; align-items: center; gap: 20rpx;
-}
-.section-icon {
-  width: 16rpx; height: 58rpx; background: var(--accent); border-radius: 8rpx;
-  flex-shrink: 0;
-}
+.section-title { font-size: 33rpx; font-weight: 700; margin: 5rpx 0 23rpx; display: flex; align-items: center; gap: 11rpx; }
+.section-title::before { content: ''; width: 9rpx; height: 33rpx; background: var(--accent); border-radius: 5rpx; flex-shrink: 0; }
 
-/* ---- 板块网格 ---- */
-.home-grid { display: grid; gap: 48rpx; }
-.home-grid.cols-2 { grid-template-columns: 1fr 1fr; gap: 44rpx; }
-.home-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; gap: 40rpx; }
+/* 板块网格 */
+.home-grid { display: grid; gap: 27rpx; }
+.home-grid.cols-2 { grid-template-columns: 1fr 1fr; gap: 25rpx; }
+.home-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; gap: 23rpx; }
 
-.board-card {
-  background: var(--card-bg); border-radius: var(--radius-card); padding: 56rpx 40rpx;
-  box-shadow: 0 10rpx 28rpx rgba(60,60,60,0.10); position: relative; overflow: hidden;
-}
+.board-card { background: var(--card-bg); border-radius: 41rpx; padding: 32rpx 28rpx; box-shadow: 0 6rpx 16rpx rgba(60,60,60,.10); position: relative; overflow: hidden; }
 .board-card:active { transform: scale(0.97); }
+.bc-emoji { font-size: 67rpx; line-height: 1; }
+.bc-title { font-size: 36rpx; font-weight: 700; margin-top: 16rpx; color: var(--text); }
+.bc-en { font-size: 23rpx; color: var(--text-weak); margin-top: 7rpx; }
+.bc-tag { display: inline-block; margin-top: 17rpx; background: #eef2e6; color: var(--primary); font-size: 19rpx; font-weight: 600; padding: 9rpx 19rpx; border-radius: 999rpx; }
 
-.bc-emoji { font-size: 118rpx; line-height: 1; }
-.bc-title { font-size: 64rpx; font-weight: 700; margin-top: 28rpx; color: var(--text); }
-.bc-en { font-size: 40rpx; color: var(--text-weak); margin-top: 12rpx; }
-.bc-tag {
-  display: inline-block; margin-top: 30rpx; background: #eef2e6;
-  color: var(--primary); font-size: 34rpx; font-weight: 600;
-  padding: 16rpx 34rpx; border-radius: 999rpx;
-}
-
-/* 即将推出：灰色 */
-.board-card.coming { opacity: 0.45; filter: grayscale(0.7); }
+.board-card.coming { opacity: .45; filter: grayscale(.7); }
 .board-card.coming .bc-tag { background: #e8e3d8; color: var(--text-weak); }
 
-.loading, .empty { text-align: center; color: var(--text-weak); font-size: 28rpx; margin-top: 200rpx; }
+.loading, .empty { text-align: center; color: var(--text-weak); font-size: 16rpx; margin-top: 120rpx; }
 
-/* ============================================================
-   平板 .tablet
-   ============================================================ */
+/* ========== 平板 .tablet ========== */
 .tablet .content { max-width: 1100px; margin: 0 auto; padding: 44px 60px 90px; }
 .tablet .h-title { font-size: 84px; }
 .tablet .h-sub { font-size: 40px; }
-.tablet .section-title { font-size: 58px; }
-.tablet .section-icon { width: 16px; height: 58px; }
+.tablet .section-title { font-size: 58px; margin: 8px 0 40px; gap: 20px; }
+.tablet .section-title::before { width: 16px; height: 58px; border-radius: 8px; }
 .tablet .home-grid { gap: 40px; }
 .tablet .board-card { padding: 56px 40px; border-radius: 72px; }
 .tablet .bc-emoji { font-size: 118px; }
-.tablet .bc-title { font-size: 64px; }
-.tablet .bc-en { font-size: 40px; }
+.tablet .bc-title { font-size: 64px; margin-top: 28px; }
+.tablet .bc-en { font-size: 40px; margin-top: 12px; }
 .tablet .bc-tag { font-size: 34px; padding: 16px 34px; }

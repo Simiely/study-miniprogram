@@ -1,28 +1,26 @@
-/* pages/stats/stats.wxss
-   统计页，match mockup 布局 */
+/* pages/stats/stats.wxss — 严格按 mockup CSS */
+.content { padding: 25rpx 34rpx 51rpx; min-height: 100vh; box-sizing: border-box; }
 
-.content { padding: 44rpx 48rpx 90rpx; min-height: 100vh; box-sizing: border-box; }
+.app-header { margin-bottom: 23rpx; }
+.h-title { font-size: 48rpx; font-weight: 700; color: var(--text); }
+.h-sub { font-size: 23rpx; color: var(--text-weak); margin-top: 8rpx; }
 
-.app-header { margin-bottom: 40rpx; }
-.h-title { font-size: 84rpx; font-weight: 700; color: var(--text); }
-.h-sub { font-size: 40rpx; color: var(--text-weak); margin-top: 14rpx; }
+.stats-wrap.center { max-width: 640rpx; margin: 0 auto; }
 
-.stats-wrap.center { max-width: 1120rpx; margin: 0 auto; }
+.stat-row { display: grid; grid-template-columns: 1fr 1fr; gap: 23rpx; margin-bottom: 27rpx; }
+.stat-tile { background: var(--card-bg); border-radius: 32rpx; padding: 32rpx; box-shadow: 0 6rpx 16rpx rgba(60,60,60,.10); text-align: center; }
+.stat-tile .st-num { font-size: 59rpx; font-weight: 700; color: var(--primary); line-height: 1; }
+.stat-tile .st-label { font-size: 23rpx; color: var(--text-weak); margin-top: 10rpx; }
 
-.stat-row { display: grid; grid-template-columns: 1fr 1fr; gap: 40rpx; margin-bottom: 48rpx; }
-.stat-tile { background: var(--card-bg); border-radius: 56rpx; padding: 56rpx; box-shadow: 0 10rpx 28rpx rgba(60,60,60,.10); text-align: center; }
-.stat-tile .st-num { font-size: 104rpx; font-weight: 700; color: var(--primary); line-height: 1; }
-.stat-tile .st-label { font-size: 40rpx; color: var(--text-weak); margin-top: 18rpx; }
-
-.top-list { background: var(--card-bg); border-radius: 56rpx; padding: 44rpx 56rpx; box-shadow: 0 10rpx 28rpx rgba(60,60,60,.10); }
-.top-list .tl-title { font-size: 48rpx; font-weight: 700; margin-bottom: 24rpx; color: var(--text); }
-.tl-item { display: flex; align-items: center; gap: 28rpx; padding: 30rpx 0; border-bottom: 2rpx solid #f0ece4; }
+.top-list { background: var(--card-bg); border-radius: 32rpx; padding: 25rpx 32rpx; box-shadow: 0 6rpx 16rpx rgba(60,60,60,.10); }
+.top-list .tl-title { font-size: 27rpx; font-weight: 700; margin-bottom: 14rpx; color: var(--text); }
+.tl-item { display: flex; align-items: center; gap: 16rpx; padding: 17rpx 0; border-bottom: 1rpx solid #f0ece4; }
 .tl-item:last-child { border-bottom: none; }
-.tl-rank { width: 64rpx; height: 64rpx; border-radius: 50%; background: #eef2e6; color: var(--primary); font-size: 38rpx; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.tl-name { font-size: 50rpx; font-weight: 600; flex: 1; color: var(--text); }
-.tl-count { font-size: 42rpx; color: var(--text-weak); }
+.tl-rank { width: 36rpx; height: 36rpx; border-radius: 50%; background: #eef2e6; color: var(--primary); font-size: 22rpx; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.tl-name { font-size: 28rpx; font-weight: 600; flex: 1; color: var(--text); }
+.tl-count { font-size: 24rpx; color: var(--text-weak); }
 
-.btn-clear { margin-top: 56rpx; background: #d97777; color: #fff; font-size: 48rpx; font-weight: 600; text-align: center; padding: 40rpx; border-radius: 999rpx; }
+.btn-clear { margin-top: 32rpx; background: #d97777; color: #fff; font-size: 27rpx; font-weight: 600; text-align: center; padding: 23rpx; border-radius: 999rpx; }
 
 /* ---- 平板 ---- */
 .tablet .content { max-width: 860px; margin: 0 auto; padding: 44px 60px 90px; }

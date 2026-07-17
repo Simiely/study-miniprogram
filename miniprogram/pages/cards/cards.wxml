@@ -34,8 +34,9 @@
       <view class="cards-stage {{isTablet ? 'flip-flank' : 'flip-center'}}">
         <view class="learn-card">
           <view class="lc-image">
+            <view class="lc-zoom">⤢</view>
             <view class="lc-emoji">{{cards[index].emoji}}</view>
-            <view class="lc-ph">实拍照片 · 学习卡片</view>
+            <view class="lc-ph">实拍照片 · 点 ⤢ 全屏查看</view>
           </view>
           <view class="lc-texts">
             <view class="lc-zhen">
@@ -98,6 +99,7 @@
         <view wx:else class="cards-stage flip-center">
           <view class="learn-card">
             <view class="lc-image">
+              <view class="lc-zoom">⤢</view>
               <view class="lc-emoji">{{popupCard.emoji}}</view>
               <view class="lc-ph">点击关闭</view>
             </view>
