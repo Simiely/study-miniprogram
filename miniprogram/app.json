@@ -1,14 +1,14 @@
 {
   "pages": [
-    "pages/index/index",   /* 首页：板块列表 */
-    "pages/cards/cards",   /* 学习页：浏览模式 / 卡片模式 */
-    "pages/stats/stats"    /* 统计页：今日浏览数据 */
+    "pages/index/index",
+    "pages/cards/cards",
+    "pages/stats/stats"
   ],
   "window": {
-    "navigationBarBackgroundColor": "#4a7c59",   /* 主绿色导航栏 */
+    "navigationBarBackgroundColor": "#4a7c59",
     "navigationBarTitleText": "学习卡片",
     "navigationBarTextStyle": "white",
-    "backgroundColor": "#f5f0e8"                 /* 奶油色背景 */
+    "backgroundColor": "#f5f0e8"
   },
   "style": "v2",
   "sitemapLocation": "sitemap.json"
