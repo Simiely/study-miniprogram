@@ -1,36 +1,28 @@
 /**
  * utils/cloud-data.js - 数据读取（先本地，后云存储）
  *
- * 【当前】从项目 sample-data/ 目录读取本地 JSON 文件
- * 【后续】填好 app.js 中的 envId 后，开启云存储模式：
- *   将下面 CLOUD_ENABLED 改为 true 即可
- *
- * 本地 JSON 文件位置：
- *   sample-data/boards.json              → 板块列表
- *   sample-data/cards-<boardId>.json     → 某板块下所有卡片
+ * 【当前】从项目 sample-data/*.js 读取本地数据（require 方式）
+ * 【后续】开启云存储：
+ *   1. 在 app.js 中填入正确 envId
+ *   2. 将下方 CLOUD_ENABLED 改为 true
+ *   3. 将 sample-data/*.json 上传到云存储根目录
  */
 
 const CLOUD_ENABLED = false;
 
-/* ========== 本地读取 ========== */
-
-function readLocalJSON(filename) {
-  try {
-    const fm = wx.getFileSystemManager();
-    const raw = fm.readFileSync(`sample-data/${filename}`, 'utf8');
-    return JSON.parse(raw);
-  } catch (e) {
-    console.error('本地 JSON 读取失败', filename, e);
-    return null;
-  }
-}
+/* ========== 本地读取（require 项目内 JS 模块）========== */
 
 function getBoardsLocal() {
-  return readLocalJSON('boards.json');
+  return require('../sample-data/boards.js');
 }
 
 function getCardsLocal(boardId) {
-  return readLocalJSON(`cards-${boardId}.json`);
+  try {
+    return require(`../sample-data/cards-${boardId}.js`);
+  } catch (e) {
+    console.error(`本地卡片数据不存在: cards-${boardId}.js`, e);
+    return { cards: [] };
+  }
 }
 
 /* ========== 云存储读取（后续启用）========== */
@@ -46,9 +38,8 @@ function getFileURL(filename) {
 async function fetchJSONCloud(filename) {
   const cacheKey = CACHE_PREFIX + filename;
   const cached = wx.getStorageSync(cacheKey);
-  if (cached && Date.now() - cached.ts < CACHE_TTL) {
-    return cached.data;
-  }
+  if (cached && Date.now() - cached.ts < CACHE_TTL) return cached.data;
+
   try {
     const { fileID } = await wx.cloud.downloadFile({ fileID: getFileURL(filename) });
     const resp = await fetch(fileID);
