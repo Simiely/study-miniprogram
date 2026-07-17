@@ -30,30 +30,30 @@
 .btn-clear { margin-top: 32rpx; background: #d97777; color: #fff; font-size: 27rpx; font-weight: 600; text-align: center; padding: 23rpx; border-radius: 999rpx; }
 
 /* ============================================================
-   📲 iPad .tablet — 独立 px 样式，直接使用 mockup 值
+   📲 iPad .tablet — 物理尺寸与 iPhone 一致（mockup px ÷3）
    ============================================================ */
-.tablet .content { padding: 44px 60px 90px; min-height: 100vh; box-sizing: border-box; }
+.tablet .content { padding: 15px 20px 30px; min-height: 100vh; box-sizing: border-box; }
 
-.tablet .app-header { margin-bottom: 40px; }
-.tablet .h-title { font-size: 84px; }
-.tablet .h-sub { font-size: 40px; margin-top: 14px; }
+.tablet .app-header { margin-bottom: 13px; }
+.tablet .h-title { font-size: 28px; }
+.tablet .h-sub { font-size: 13px; margin-top: 5px; }
 
 /* 竖屏：居中收拢 */
-.tablet .stats-wrap.center { max-width: 860px; margin: 0 auto; }
-.tablet .stat-row { gap: 40px; margin-bottom: 48px; }
-.tablet .stat-tile { border-radius: 56px; padding: 56px; }
-.tablet .stat-tile .st-num { font-size: 104px; }
-.tablet .stat-tile .st-label { font-size: 40px; margin-top: 18px; }
-.tablet .top-list { border-radius: 56px; padding: 44px 56px; }
-.tablet .top-list .tl-title { font-size: 48px; margin-bottom: 24px; }
-.tablet .tl-item { gap: 28px; padding: 30px 0; border-bottom: 2px solid #f0ece4; }
-.tablet .tl-rank { width: 64px; height: 64px; font-size: 38px; }
-.tablet .tl-name { font-size: 50px; }
-.tablet .tl-count { font-size: 42px; }
-.tablet .btn-clear { margin-top: 56px; font-size: 48px; padding: 40px; }
+.tablet .stats-wrap.center { max-width: 287px; margin: 0 auto; }
+.tablet .stat-row { gap: 13px; margin-bottom: 16px; }
+.tablet .stat-tile { border-radius: 19px; padding: 19px; }
+.tablet .stat-tile .st-num { font-size: 35px; }
+.tablet .stat-tile .st-label { font-size: 13px; margin-top: 6px; }
+.tablet .top-list { border-radius: 19px; padding: 15px 19px; }
+.tablet .top-list .tl-title { font-size: 16px; margin-bottom: 8px; }
+.tablet .tl-item { gap: 9px; padding: 10px 0; border-bottom: 1px solid #f0ece4; }
+.tablet .tl-rank { width: 21px; height: 21px; font-size: 13px; }
+.tablet .tl-name { font-size: 17px; }
+.tablet .tl-count { font-size: 14px; }
+.tablet .btn-clear { margin-top: 19px; font-size: 16px; padding: 13px; }
 
 /* 横屏：左右分栏 */
-.tablet .stats-wrap.split { display: flex; gap: 64px; align-items: flex-start; }
-.tablet .stats-wrap.split .col-left { flex: 0 0 980px; }
+.tablet .stats-wrap.split { display: flex; gap: 21px; align-items: flex-start; }
+.tablet .stats-wrap.split .col-left { flex: 0 0 327px; }
 .tablet .stats-wrap.split .col-right { flex: 1; }
-.tablet .stats-wrap.split .btn-clear { margin-top: 40px; }
+.tablet .stats-wrap.split .btn-clear { margin-top: 13px; }
